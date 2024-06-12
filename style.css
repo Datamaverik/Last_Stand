@@ -1,0 +1,105 @@
+@font-face {
+  font-family: TickingTimer;
+  src: url(./assets/TickingTimebombBB.ttf);
+}
+@font-face {
+  font-family: Pixeloid;
+  src: url(./assets/PixeloidSans-Bold.otf);
+}
+
+* {
+  /* Padding won't be taken into affect when calculating the width of an element */
+  box-sizing: border-box;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+body {
+  margin: 0;
+  background-color: rgb(18, 22, 27);
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  /* backdrop-filter: blur(5px) brightness(20%); */
+  user-select: none;
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+}
+
+#container {
+  position: relative;
+  display: inline-block;
+}
+
+#header {
+  position: absolute;
+  display: flex;
+  width: 35%;
+  align-items: start;
+  padding: 15px;
+
+}
+
+#Hmeter,#Bmeter {
+  background-color: rgb(67, 73, 87);
+  width: 100%;
+  height: 40px;
+  padding: 0px 10px 0px 10px;
+  border-radius: 20px;
+  margin-right: 10px;
+}
+meter::-webkit-meter-optimum-value,
+meter::-webkit-meter-suboptimum-value,
+meter::-webkit-meter-even-less-good-value {
+  -webkit-transition: width 0.5s;
+}
+
+#timer {
+  border: 3px solid white;
+  background-color: rgb(67, 73, 87);
+  width: 90px;
+  height: 90px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2em;
+  font-family: TickingTimer;
+  font-weight: bolder;
+  border-radius: 25px;
+  margin-right: 10px;
+}
+#ammo{
+  font-family: Pixeloid;
+}
+
+#pauseScr{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+
+button{
+  font-family: Pixeloid;
+  font-size: 1.2rem;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 2px solid black;
+  transition: 0.3s ease;
+  box-shadow: 1px 1px 3px black;
+}
+button:hover{
+  cursor: pointer;
+  transform: scale(1.15);
+  box-shadow: 0px 0px 5px black;
+}
+
+#msg{
+  font-family: Pixeloid;
+    font-size: 1.3em;
+}

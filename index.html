@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Last Stand</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <dialog id="pauseScr">
+      <p id="msg"></p>
+      <button id="restartBtn">Restart</button>
+    </dialog>
+    <div id="container">
+      <div id="header" style="display: flex; flex-direction: column">
+        <div
+          style="
+            width: 100%;
+            display: flex;
+            align-items: center;
+            font-size: 2em;
+          "
+        >
+          🫀<meter id="Hmeter" low="0.24" high="0.6" optimum="0.9"></meter>
+          <div id="timer" style="font-size: 1.2em">0:00</div>
+        </div>
+        <div
+          style="
+            width: 100%;
+            display: flex;
+            align-items: center;
+            font-size: 2em;
+          "
+        >
+          🔥<meter
+            id="Bmeter"
+            low="0.08"
+            high="0.18"
+            optimum="0.27"
+            style="width: 40%; margin-right: 20px;"
+          ></meter>
+          <p id="ammo" style="font-size: 1.35rem; color: white;">Ammo: 90</p>
+        </div>
+      </div>
+      <canvas></canvas>
+    </div>
+    <script src="./src/utils.js"></script>
+    <script src="./src/Bullet.js"></script>
+    <script src="./src/Gun.js"></script>
+    <script src="./src/Environment.js"></script>
+    <script src="./src/Player.js"></script>
+    <script src="./src/canvas.js"></script>
+  </body>
+</html>
