@@ -17,6 +17,7 @@ class Player {
     this.health = 100;
     this.grounded = false;
     this.lastInjured = 0;
+    this.score = 0;
   }
 
   draw() {
@@ -42,8 +43,7 @@ class Player {
       if (collision({ obj1: this, obj2: collisionBlock })) {
         //  Call the attack method of zombie to damage the block
         if (this instanceof Zombie) {
-          if (this.attack(collisionBlock, 5000)) {
-            console.log("done");
+          if (this.attack(collisionBlock, 5000 - 100 * this.zombies.length)) {
             this.collisionBlocks.splice(i, 1);
           }
         }
@@ -123,7 +123,7 @@ class Player {
             currentTime - this.lastInjured >= 2000 &&
             !(this instanceof Zombie)
           ) {
-            console.log("health rem: " + this.health);
+            // console.log("health rem: " + this.health);
             this.health -= 10;
             if (this instanceof Player) {
               Hmeter.value = this.health / 100;
@@ -153,6 +153,7 @@ class Zombie extends Player {
     width = 40,
     gravity = 0.5,
     collisionBlocks,
+    attackFreq = 2000,
   }) {
     super({ collisionBlocks, zombies });
 
@@ -163,6 +164,8 @@ class Zombie extends Player {
     this.height = height;
     this.gravity = gravity;
     this.lastAttackTime = 0;
+    this.damage = 10 + 0.5 * zombies.length;
+    this.attackFreq = attackFreq;
   }
 
   draw() {
@@ -171,9 +174,10 @@ class Zombie extends Player {
   }
 
   attack(player, attackRate) {
+    this.damage = 10 + 0.5 * zombies.length;
     const currentTime = Date.now();
     if (currentTime - this.lastAttackTime >= attackRate) {
-      player.health -= 10;
+      player.health -= this.damage;
       if (player instanceof Player) Hmeter.value = player.health / 100;
       if (player.health <= 0) return true;
       this.lastAttackTime = currentTime;
@@ -183,11 +187,8 @@ class Zombie extends Player {
 
   detectPlayerCollision(player) {
     if (collision({ obj1: this, obj2: player })) {
-      if (this.attack(player, 2000)) {
+      if (this.attack(player, this.attackFreq)) {
         GameOver("YOU LOSE!!! You were ran over by zombies");
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000);
       }
       if (this.velocity.y > 0.5) {
         // Zombie falls on top of the player

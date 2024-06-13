@@ -1,5 +1,15 @@
 class Gun {
-  constructor({ ammo, gunrate, blocks, damage, mag = 30, reloadTime = 3.5 }) {
+  constructor({
+    ammo,
+    gunrate,
+    velocity,
+    blocks,
+    damage,
+    mag = 30,
+    reloadTime = 3.5,
+    name,
+    player,
+  }) {
     this.bullets = [];
     this.ammo = ammo;
     this.mag = mag;
@@ -12,6 +22,10 @@ class Gun {
     this.damage = damage;
     this.reloadTime = reloadTime;
     this.isReloading = false;
+    this.name = name;
+    this.velocity = velocity;
+    this.player = player;
+    this.lastFired = 0;
   }
 
   // Method to add a new bullet to the array
@@ -52,11 +66,12 @@ class Gun {
           x: player.position.x + player.width / 2,
           y: player.position.y + player.height / 2,
         },
-        velocity: 6,
+        velocity: this.velocity,
         theta,
         collisionBlocks: this.blocks,
         zombies,
         damage: this.damage,
+        player: this.player,
       });
       this.addBullet(bullet);
       this.mag--;
@@ -64,14 +79,22 @@ class Gun {
       //  updating meters and texts
       Bmeter.value = this.mag / 100;
       ammo.textContent = `${this.mag}/${this.ammo}`;
-    } else ammo.style.color = 'red'
+    } if(this.mag<=0) {
+      color = "red";
+      ammo.style.color = color;
+    }
   }
 
   startFiring(player) {
-    if (this.isFiring) return;
+    if (this.isFiring || this.isReloading) return;
 
     this.isFiring = true;
     const intervalTime = 60000 / this.gunrate;
+    const currentTime = Date.now();
+    if (currentTime - this.lastFired >= intervalTime) {
+      this.fireBullet(player);
+      this.lastFired = currentTime;
+    }
 
     this.fireInterval = setInterval(() => {
       this.fireBullet(player);
@@ -88,11 +111,16 @@ class Gun {
 
   reload() {
     // console.log("Rounds fired: " + this.roundsFired);
-    if (this.isReloading) return; // Check if already reloading
+    if (this.isReloading || this.isFiring) return; // Check if already reloading
     this.isReloading = true; // Set reloading flag
     ammo.textContent = `Reloading....`;
-    if(this.ammo>0)ammo.style.color = 'white';
-    else ammo.style.color = 'red';
+    if (this.ammo > 0) {
+      color = "white";
+      ammo.style.color = color;
+    } else {
+      color = "red";
+      ammo.style.color = color;
+    }
 
     setTimeout(() => {
       if (this.ammo >= this.roundsFired) {
@@ -115,3 +143,5 @@ class Gun {
   }
   // console.log("Ammo left: " + this.ammo);
 }
+
+const guns = [];

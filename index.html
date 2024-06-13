@@ -10,7 +10,54 @@
       <p id="msg"></p>
       <button id="restartBtn">Restart</button>
     </dialog>
+    <dialog id="powerUpScr">
+      <div>
+        <p id="PUdesc"></p>
+        <button id="closeBtn" style="margin: 0px">✖️</button>
+      </div>
+      <button
+        class="powerUp"
+        data-tooltip="🩹 Health Pack: Feeling a bit woozy? Grab this and pretend you're invincible again!"
+        id="healthPU"
+      >
+        Health Pack 💰1100
+      </button>
+      <button
+        class="powerUp"
+        data-tooltip="🔫 Ammo Pack: Because running out of bullets during a zombie apocalypse is just embarrassing."
+        id="ammoPU"
+      >
+        Ammo Pack 💰2250
+      </button>
+      <button
+        class="powerUp"
+        data-tooltip="⚡ Speed Boost: Need to run away faster? Activate this and leave the zombies in the dust. Literally."
+        id="speedPU"
+      >
+        Speed Boost 💰1200
+      </button>
+      <button
+        class="powerUp"
+        data-tooltip="💥 Damage Boost: Because sometimes you just need to hit harder. Go on, give those zombies a headache!"
+        id="damagePU"
+      >
+        Damage Boost 💰1600
+      </button>
+    </dialog>
     <div id="container">
+      <div id="shopCont">
+        <button id="shop">Shop</button>
+        <p id="score">Score:💰00</p>
+      </div>
+      <div id="PUTimerCont">
+        <p id="PUmsg">Not enough credit</p>
+        <div
+          style="display: flex; justify-content: center; align-items: center"
+        >
+          <div id="timer2">0:00</div>
+          <div id="timer3">0:00</div>
+        </div>
+      </div>
       <div id="header" style="display: flex; flex-direction: column">
         <div
           style="
@@ -21,7 +68,7 @@
           "
         >
           🫀<meter id="Hmeter" low="0.24" high="0.6" optimum="0.9"></meter>
-          <div id="timer" style="font-size: 1.2em">0:00</div>
+          <div id="timer">0:00</div>
         </div>
         <div
           style="
@@ -31,14 +78,11 @@
             font-size: 2em;
           "
         >
-          🔥<meter
-            id="Bmeter"
-            low="0.08"
-            high="0.18"
-            optimum="0.27"
-            style="width: 40%; margin-right: 20px;"
-          ></meter>
-          <p id="ammo" style="font-size: 1.35rem; color: white;">Ammo: 90</p>
+          🔥<meter id="Bmeter" style="width: 40%; margin-right: 20px"></meter>
+          <div style="font-size: 1.3rem; color: white">
+            <p id="gun">M416</p>
+            <p id="ammo">Ammo: 90</p>
+          </div>
         </div>
       </div>
       <canvas></canvas>

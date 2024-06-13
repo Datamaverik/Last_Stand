@@ -8,16 +8,34 @@ let collisionDetected,
   theta,
   gamePaused = false,
   time,
-  duration = 120,
+  time2,
+  zombieInterval = null,
+  color = "white",
+  currentGun,
+  lastGun,
+  speedPUTimeout = null,
+  damagePUTimeout = null,
+  duration = 300,
+  speedDur = 0,
+  damageDur = 0,
+  Pvelocity = 3.8,
   zombies = [];
 
 const Hmeter = document.getElementById("Hmeter"),
   Bmeter = document.getElementById("Bmeter"),
   timer = document.getElementById("timer"),
+  timer2 = document.getElementById("timer2"),
+  timer3 = document.getElementById("timer3"),
   pauseScr = document.getElementById("pauseScr"),
   msg = document.getElementById("msg"),
   restartBtn = document.getElementById("restartBtn"),
-  ammo = document.getElementById("ammo");
+  ammo = document.getElementById("ammo"),
+  gunText = document.getElementById("gun"),
+  powerUpScr = document.getElementById("powerUpScr"),
+  shop = document.getElementById("shop"),
+  PUdesc = document.getElementById("PUdesc"),
+  score = document.getElementById("score"),
+  PUmsg = document.getElementById("PUmsg");
 
 function randomIntFromRange(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -61,27 +79,25 @@ function calculateAngle() {
 
 // Function to generate random positions within canvas boundaries
 function getRandomPosition() {
-  // const x = Math.random() * (canvas.width - 40);
-  // const y = Math.random() * (canvas.height - 90);
   const x = randomIntFromRange(1, 5) % 2 == 0 ? 10 : 1180;
   const y = 400;
   return { x, y };
 }
 
 // Function to populate the zombies array with 'n' zombies
-function spawnZombies(n) {
-  for (let i = 0; i < n; i++) {
-    setTimeout(() => {
-      const position = getRandomPosition();
-      const zombie = new Zombie({
-        position: position,
-        velocity: { x: 0, y: 0 },
-        collisionBlocks: blocks,
-        zombies,
-      });
-      zombies.push(zombie);
-    }, 5000 * i);
-  }
+function spawnZombies(interval) {
+  if (gamePaused || duration <= 0) return;
+
+  setTimeout(() => {
+    const position = getRandomPosition();
+    const zombie = new Zombie({
+      position: position,
+      velocity: { x: 0, y: 0 },
+      collisionBlocks: blocks,
+      zombies,
+    });
+    zombies.push(zombie);
+  }, interval);
 }
 
 function formatTimer(seconds) {
@@ -95,14 +111,43 @@ function GameOver(text) {
   gamePaused = true;
   pauseScr.style.display = "flex";
   pauseScr.showModal();
+  clearTimeout(zombieInterval);
 }
 
 function decreaseTimer() {
   if (duration > 0 && !gamePaused) {
     time = setTimeout(decreaseTimer, 1000);
     duration--;
+    if (speedDur > 0) {
+      speedDur--;
+      timer2.classList.remove("timer-hide");
+      timer2.classList.add("timer-show");
+      timer2.textContent = formatTimer(speedDur);
+    } else {
+      timer2.classList.remove("timer-show");
+      timer2.classList.add("timer-hide");
+      speedPUTimeout = null;
+    }
+    if (damageDur > 0) {
+      damageDur--;
+      timer3.classList.remove("timer-hide");
+      timer3.classList.add("timer-show");
+      timer3.textContent = formatTimer(damageDur);
+    } else {
+      timer3.classList.remove("timer-show");
+      timer3.classList.add("timer-hide");
+      damagePUTimeout = null;
+    }
     timer.textContent = formatTimer(duration);
   } else if (duration <= 0) GameOver("Time's Up, YOU WIN!!");
+}
+
+function startGame() {
+  zombieInterval = setInterval(() => {
+    spawnZombies(5000); // Spawn a zombie every 5 seconds
+  }, 5000);
+  gamePaused = false;
+  decreaseTimer();
 }
 
 restartBtn.onclick = () => {
@@ -111,5 +156,31 @@ restartBtn.onclick = () => {
 
 window.onload = () => {
   pauseScr.style.display = "none";
-  decreaseTimer();
+  powerUpScr.style.display = "none";
+  PUmsg.style.display = "none";
+  startGame();
 };
+
+function usePowerUp() {
+  //  updating health meter,ammo meter, score, etc
+  Hmeter.value = player.health / 100;
+  score.textContent = `Score:💰${player.score}`;
+  powerUpScr.close();
+  powerUpScr.style.display = "none";
+  Bmeter.value = currentGun.mag / 100;
+  ammo.textContent = `${currentGun.mag}/${currentGun.ammo}`;
+  gamePaused = false;
+  animate();
+  decreaseTimer();
+}
+
+function updatePUmsg(msg,color) {
+  PUmsg.style.color = color;
+  PUmsg.style.display = "block";
+  PUmsg.textContent = msg;
+  setTimeout(() => {
+    PUmsg.style.color = "white";
+    PUmsg.style.display = "none";
+    PUmsg.textContent = "";
+  }, 1500);
+}

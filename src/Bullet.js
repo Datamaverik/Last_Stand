@@ -8,6 +8,7 @@ class Bullet {
     collisionBlocks,
     radius = 5,
     zombies,
+    player,
   }) {
     this.position = position;
     this.velocity = velocity;
@@ -19,6 +20,7 @@ class Bullet {
     this.collisionBlocks = collisionBlocks;
     this.zombies = zombies;
     this.radius = radius;
+    this.player = player;
   }
 
   draw() {
@@ -55,7 +57,9 @@ class Bullet {
 
       if (bulletCollision({ bul: this, obj: zombie })) {
         if (zombie.health > 0) zombie.health -= this.damage;
-        else this.zombies.splice(i, 1);
+        if (zombie.health <= 0) this.zombies.splice(i, 1);
+        this.player.score += this.damage;
+        score.textContent = `Score:💰${this.player.score}`;
         return true;
       }
     }
@@ -67,17 +71,17 @@ class Bullet {
     this.dy += this.gravity;
   }
 
-  calculateTrajectoryPoints(startPos, angle, velocity, gravity, steps = 80) {
+  calculateTrajectoryPoints(startPos, angle, steps = 80) {
     const points = [];
     let x = startPos.x;
     let y = startPos.y;
-    let dx = velocity * Math.cos(angle) * 1.2;
-    let dy = velocity * Math.sin(angle);
+    let dx = this.velocity * Math.cos(angle) * 1.2;
+    let dy = this.velocity * Math.sin(angle);
 
     for (let i = 0; i < steps; i++) {
       x += dx;
       y += dy;
-      dy += gravity;
+      dy += this.gravity;
 
       points.push({ x, y });
     }

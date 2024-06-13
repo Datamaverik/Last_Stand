@@ -15,16 +15,52 @@ const base = new Platform({
   position: { x: 0, y: 556 },
   width: canvas.width,
 });
-const gun = new Gun({
+//  creating guns
+const M416 = new Gun({
   ammo: 60,
   gunrate: 360,
   blocks: blocks,
   damage: 10,
   mag: 30,
+  name: "M416",
+  velocity: 8,
+  player: player,
 });
-Bmeter.max = gun.mag / 100;
-Bmeter.value = gun.mag / 100;
-ammo.textContent = `${gun.mag}/${gun.ammo}`;
+const AWM = new Gun({
+  ammo: 5,
+  gunrate: 20,
+  blocks: blocks,
+  damage: 110,
+  mag: 5,
+  name: "AWM",
+  velocity: 10.5,
+  player: player,
+});
+const AKM = new Gun({
+  ammo: 60,
+  gunrate: 260,
+  blocks: blocks,
+  damage: 15,
+  mag: 30,
+  name: "AKM",
+  velocity: 7,
+  player: player,
+});
+const DEagle = new Gun({
+  ammo: 30,
+  gunrate: 120,
+  blocks: blocks,
+  damage: 8,
+  mag: 15,
+  name: "DEagle",
+  velocity: 5,
+  player: player,
+});
+guns.push(M416);
+guns.push(AWM);
+guns.push(AKM);
+guns.push(DEagle);
+
 const bulletTrack = new Bullet({
   position: {
     x: player.position.x + player.width / 2,
@@ -33,8 +69,11 @@ const bulletTrack = new Bullet({
   velocity: 6,
   theta,
   collisionBlocks: blocks,
+  player: player,
 });
 
+currentGun = DEagle;
+changeGun(DEagle);
 const keys = {
   right: {
     pressed: false,
@@ -47,6 +86,36 @@ const mouse = {
   x: undefined,
   y: undefined,
 };
+
+function changeGun(gun) {
+  if (currentGun.isFiring || currentGun.isReloading) return;
+
+  //  update the current gun
+  currentGun = gun;
+  const factor = currentGun.magLimit / 100;
+
+  //  updating the meter and texts
+  Bmeter.low = 0.24 * factor;
+  Bmeter.high = 0.6 * factor;
+  Bmeter.optimum = 0.9 * factor;
+  Bmeter.max = factor;
+  Bmeter.value = currentGun.mag / 100;
+  gunText.textContent = currentGun.name;
+  ammo.textContent = `${currentGun.mag}/${currentGun.ammo}`;
+
+  //  updating the text color
+  if (currentGun.ammo > 0) {
+    if (currentGun.mag > 0) color = "white";
+    else color = "red";
+  } else {
+    if (currentGun.mag > 0) color = "white";
+    else color = "red";
+  }
+  ammo.style.color = color;
+
+  //  updating the bullet track
+  bulletTrack.velocity = currentGun.velocity;
+}
 
 function animate() {
   if (gamePaused) return;
@@ -67,20 +136,18 @@ function animate() {
       x: player.position.x + player.width / 2,
       y: player.position.y + player.height / 2,
     },
-    theta,
-    6, // bullet velocity
-    0.08 // bullet gravity
+    theta
   );
   Bullet.drawTrajectory(trajectoryPoints);
 
-  gun.shoot();
+  currentGun.shoot();
   for (let i = 0; i < blocks.length; i++) {
     blocks[i].draw();
   }
 
   //    player movements
-  if (keys.right.pressed) player.velocity.x = 5;
-  else if (keys.left.pressed) player.velocity.x = -5;
+  if (keys.right.pressed) player.velocity.x = Pvelocity;
+  else if (keys.left.pressed) player.velocity.x = -Pvelocity;
   else player.velocity.x = 0;
 
   //    platform collision detection
@@ -126,11 +193,15 @@ addEventListener("keydown", ({ key }) => {
         gamePaused = false;
         animate();
         decreaseTimer();
+        powerUpScr.close();
+        powerUpScr.style.display = "none";
         pauseScr.close();
         pauseScr.style.display = "none";
       } else {
         msg.textContent = 'Press "Esc" to resume';
         gamePaused = true;
+        powerUpScr.close();
+        powerUpScr.style.display = "none";
         pauseScr.showModal();
         pauseScr.style.display = "flex";
       }
@@ -147,7 +218,19 @@ addEventListener("keyup", ({ key }) => {
       keys.left.pressed = false;
       break;
     case "r":
-      gun.reload();
+      currentGun.reload();
+      break;
+    case "1":
+      changeGun(guns[0]);
+      break;
+    case "2":
+      changeGun(guns[1]);
+      break;
+    case "3":
+      changeGun(guns[2]);
+      break;
+    case "4":
+      changeGun(guns[3]);
       break;
   }
 });
@@ -160,9 +243,111 @@ addEventListener("mousemove", (e) => {
 });
 
 addEventListener("mousedown", () => {
-  gun.startFiring(player);
+  if (gamePaused) return;
+  currentGun.startFiring(player);
 });
 
 addEventListener("mouseup", () => {
-  gun.stopFiring();
+  currentGun.stopFiring();
+});
+
+shop.addEventListener("click", () => {
+  if (gamePaused) return;
+  gamePaused = true;
+  powerUpScr.showModal();
+  powerUpScr.style.display = "flex";
+});
+
+closeBtn.onclick = () => {
+  usePowerUp();
+};
+
+document.querySelectorAll(".powerUp").forEach((btn, i) => {
+  btn.addEventListener("mouseenter", (e) => {
+    PUdesc.textContent = btn.getAttribute("data-tooltip");
+  });
+  btn.addEventListener("click", (e) => {
+    switch (i) {
+      case 0:
+        if (player.score < 1100) {
+          // PUmsg.style.color = "red";
+          // PUmsg.style.display = "block";
+          // PUmsg.textContent = "Not enough Credits!";
+          // setTimeout(() => {
+          //   PUmsg.style.color = "white";
+          //   PUmsg.style.display = "none";
+          //   PUmsg.textContent = "";
+          // }, 1500);
+          updatePUmsg("Not enough credits!!", "red");
+          return;
+        }
+        player.score -= 1100;
+        if (player.health > 80) player.health = 100;
+        else player.health += 20;
+        usePowerUp();
+        break;
+      case 1:
+        if (player.score < 2250) {
+          updatePUmsg("Not enough credits!!", "red");
+          return;
+        }
+        player.score -= 2250;
+        guns.forEach((gun) => {
+          if (gun.name === currentGun.name) {
+            console.log(gun.ammo);
+            gun.ammo += gun.magLimit;
+            console.log(gun.magLimit);
+            return;
+          }
+        });
+        usePowerUp();
+        break;
+      case 2:
+        if (player.score < 1200) {
+          updatePUmsg("Not enough credits!!", "red");
+          return;
+        }
+        player.score -= 1200;
+        Pvelocity = 7.5;
+        speedDur += 15;
+        if (!speedPUTimeout) {
+          speedPUTimeout = setTimeout(() => {
+            Pvelocity = 3.8;
+          }, speedDur * 1000);
+        } else {
+          clearTimeout(speedPUTimeout);
+          speedPUTimeout = setTimeout(() => {
+            Pvelocity = 3.8;
+          }, speedDur * 1000);
+        }
+        usePowerUp();
+        break;
+      case 3:
+        if (player.score < 1600) {
+          updatePUmsg("Not enough credits!!", "red");
+          return;
+        }
+        player.score -= 1600;
+        damageDur += 15;
+        if (!damagePUTimeout) {
+          guns.forEach((gun) => {
+            gun.damage *= 2;
+          });
+          damagePUTimeout = setTimeout(() => {
+            guns.forEach((gun) => {
+              gun.damage /= 2;
+            });
+          }, damageDur * 1000);
+        } else {
+          clearTimeout(damagePUTimeout);
+          damagePUTimeout = setTimeout(() => {
+            guns.forEach((gun) => {
+              gun.damage /= 2;
+            });
+          }, damageDur * 1000);
+        }
+        usePowerUp();
+        break;
+    }
+  });
 });

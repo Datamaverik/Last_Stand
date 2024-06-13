@@ -58,20 +58,27 @@ blocks[6] = new Environment({
   position: { x: h + 97, y: 486 },
   size: { width: 70, height: 70 },
 });
+//  left boundary
 blocks[7] = new Environment({
   position: { x: -20, y: 0 },
   size: { width: 20, height: canvas.height },
+  health: 1000000,
 });
+//  right boundary
 blocks[8] = new Environment({
   position: { x: canvas.width, y: 0 },
   size: { width: 20, height: canvas.height },
+  health: 1000000,
 });
+//  Top cover
 blocks[9] = new Environment({
   position: { x: 0, y: -20 },
   size: { width: canvas.width, height: 20 },
+  health: 1000000,
 });
+//  base
 blocks[10] = new Environment({
-  position: { x: 0, y: 556 },
-  size: { width: canvas.width, height: 20 },
+  position: { x: -20, y: 556 },
+  size: { width: canvas.width + 20, height: 20 },
   health: 1000000,
 });
