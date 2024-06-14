@@ -99,3 +99,13 @@ class Bullet {
     });
   }
 }
+
+class Particle {
+  constructor(x, y, dx, dy) {
+    this.x = x;
+    this.y = y;
+    this.xs = dx;
+    this.ys = dy;
+    this.life = 0;
+  }
+}

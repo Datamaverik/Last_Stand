@@ -18,6 +18,13 @@ class Player {
     this.grounded = false;
     this.lastInjured = 0;
     this.score = 0;
+
+    this.fuel = 100;
+    this.jetpackActive = false;
+    this.maxFuel = 100;
+    this.fuelUsage = 0.05;
+    this.refuelRate = 0.015;
+    this.jetpackGravity = 0.01;
   }
 
   draw() {
@@ -26,6 +33,22 @@ class Player {
   }
 
   update() {
+    //  Jetpack logic
+    //  jumpSt = 13
+    if (this.jetpackActive && this.fuel > 0) {
+      this.fuel -= this.fuelUsage;
+      this.gravity = this.jetpackGravity;
+      this.jumpStrength = 3;
+    } else {
+      this.gravity = 0.5;
+      this.jumpStrength = 13;
+      this.jetpackActive = false;
+    }
+
+    //  refuel logic
+    if (!this.jetpackActive && this.fuel < this.maxFuel)
+      this.fuel += this.refuelRate;
+    Fmeter.value = this.fuel / 100;
     this.draw();
 
     this.position.x += this.velocity.x;
@@ -33,6 +56,12 @@ class Player {
     this.checkForHorizontalCollision();
     this.applyGravity();
     this.checkForVerticalCollision();
+  }
+
+  toggleJetpack() {
+    if (this.fuel > 0) {
+      this.jetpackActive = !this.jetpackActive;
+    }
   }
 
   checkForHorizontalCollision() {
@@ -182,7 +211,6 @@ class Zombie extends Player {
   }
 
   draw() {
-    
     c.fillStyle = this.color;
     c.fillRect(this.position.x, this.position.y, this.width, this.height);
   }
@@ -190,7 +218,11 @@ class Zombie extends Player {
   attack(player, attackRate) {
     const currentTime = Date.now();
     if (currentTime - this.lastAttackTime >= attackRate) {
-      player.health -= (this.damage + 0.25 * zombies.length);
+      if (player instanceof Player) {
+        if (randomIntFromRange(1, 10) % 2 === 0) playSound("Hurt", 0.5);
+        else playSound("Hurt2", 0.5);
+      }
+      player.health -= this.damage + 0.25 * zombies.length;
       if (player instanceof Player) Hmeter.value = player.health / 100;
       if (player.health <= 0) return true;
       this.lastAttackTime = currentTime;
@@ -237,7 +269,7 @@ class JumpingZombie extends Zombie {
     attackFreq = 2000,
     jumpStrength = 15,
     damage,
-    speed
+    speed,
   }) {
     super({
       position,
@@ -250,13 +282,13 @@ class JumpingZombie extends Zombie {
       attackFreq,
       color,
       speed,
-      damage
+      damage,
     });
     this.jumpStrength = jumpStrength;
   }
 
   draw() {
-    c.fillStyle = 'green';
+    c.fillStyle = "green";
     c.fillRect(this.position.x, this.position.y, this.width, this.height);
   }
 

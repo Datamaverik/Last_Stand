@@ -29,50 +29,67 @@ const M4A1 = new Gun({
   ammo: 60,
   gunrate: 360,
   blocks: blocks,
-  damage: 10,
+  damage: 14,
   mag: 30,
   name: "M4A1",
   velocity: 8,
   player: player,
   reloadTime: 3.1,
+  spread: 2 * (Math.PI / 180),
 });
 const AWM = new Gun({
   ammo: 5,
-  gunrate: 20,
+  gunrate: 30,
   blocks: blocks,
-  damage: 110,
+  damage: 180,
   mag: 5,
   name: "AWM",
-  velocity: 10.5,
+  velocity: 11,
   player: player,
   reloadTime: 3.6,
+  spread: 0.5 * (Math.PI / 180),
 });
 const AKM = new Gun({
   ammo: 60,
-  gunrate: 260,
+  gunrate: 246,
   blocks: blocks,
-  damage: 17,
+  damage: 17.5,
   mag: 30,
   name: "AKM",
   velocity: 7,
   player: player,
   reloadTime: 2.35,
+  spread: 1.5 * (Math.PI / 180),
 });
 const DEagle = new Gun({
-  ammo: 30,
-  gunrate: 120,
+  ammo: 28,
+  gunrate: 82,
   blocks: blocks,
-  damage: 13,
-  mag: 15,
+  damage: 32,
+  mag: 7,
   name: "DEagle",
   velocity: 5,
   player: player,
   reloadTime: 2,
+  spread: 1.2 * (Math.PI / 180),
+});
+const UZI = new Gun({
+  ammo: 66,
+  gunrate: 778,
+  blocks: blocks,
+  damage: 7.5,
+  mag: 33,
+  name: "UZI",
+  velocity: 6,
+  player: player,
+  reloadTime: 1.6,
+  spread: 2.5 * (Math.PI / 180),
 });
 guns.push(M4A1);
 guns.push(AWM);
 guns.push(AKM);
 guns.push(DEagle);
+guns.push(UZI);
 
 const bulletTrack = new Bullet({
   position: {
@@ -85,8 +102,8 @@ const bulletTrack = new Bullet({
   player: player,
 });
 
-currentGun = DEagle;
-changeGun(DEagle);
+currentGun = UZI;
+changeGun(UZI);
 const keys = {
   right: {
     pressed: false,
@@ -145,25 +162,37 @@ function animate() {
   player.zombies = zombies;
   platform.draw();
   theta = calculateAngle(player);
-
+  currentGun.draw();
   const trajectoryPoints = bulletTrack.calculateTrajectoryPoints(
     {
-      x: player.position.x + player.width / 2,
-      y: player.position.y + player.height / 2,
+      x:
+        player.position.x +
+        player.width / 2 +
+        currentGun.width * Math.cos(theta),
+      y:
+        player.position.y +
+        player.height / 2 +
+        currentGun.width * Math.sin(theta),
     },
     theta
   );
   Bullet.drawTrajectory(trajectoryPoints);
 
-  currentGun.shoot();
+  guns.forEach((gun) => {
+    if (gun.bullets.length > 0) gun.shoot();
+  });
   for (let i = 0; i < blocks.length; i++) {
     blocks[i].draw();
   }
 
   //    player movements
-  if (keys.right.pressed) player.velocity.x = Pvelocity;
-  else if (keys.left.pressed) player.velocity.x = -Pvelocity;
-  else player.velocity.x = 0;
+  if (keys.right.pressed) {
+    if (lastKey === "right") player.velocity.x = Pvelocity;
+    else if (lastKey === "left") player.velocity.x = -Pvelocity;
+  } else if (keys.left.pressed) {
+    if (lastKey === "left") player.velocity.x = -Pvelocity;
+    else if (lastKey === "right") player.velocity.x = Pvelocity;
+  } else player.velocity.x = 0;
 
   //    platform collision detection
   if (
@@ -184,18 +213,30 @@ addEventListener("keydown", ({ key }) => {
   switch (key) {
     case "d":
       keys.right.pressed = true;
+      lastKey = "right";
+      if (!player.jetpackActive) playRunSound();
       break;
     case "a":
       keys.left.pressed = true;
+      lastKey = "left";
+      if (!player.jetpackActive) playRunSound();
       break;
     case "w":
-      if (player.grounded) {
+      if (player.grounded || player.jetpackActive) {
+        if (!player.jetpackActive) {
+          if (randomIntFromRange(1, 10) % 2 == 0) playSound("Jump", 0.5);
+          else playSound("Jump2", 0.5);
+        }
         player.velocity.y = -player.jumpStrength;
         player.grounded = false;
       }
       break;
+    case "j":
+      player.toggleJetpack();
+      break;
     case "Escape":
       if (gamePaused) {
+        playSound("pause");
         gamePaused = false;
         animate();
         decreaseTimer();
@@ -204,6 +245,7 @@ addEventListener("keydown", ({ key }) => {
         pauseScr.close();
         pauseScr.style.display = "none";
       } else {
+        playSound("pause");
         msg.textContent = 'Press "Esc" to resume';
         gamePaused = true;
         powerUpScr.close();
@@ -219,13 +261,23 @@ addEventListener("keyup", ({ key }) => {
   switch (key) {
     case "d":
       keys.right.pressed = false;
+      if (!keys.left.pressed) stopRunSound();
+      else lastKey = "left";
       break;
     case "a":
       keys.left.pressed = false;
+      if (!keys.right.pressed) stopRunSound();
+      else lastKey = "right";
       break;
     case "r":
       currentGun.reload();
       break;
+    // case "w":
+    //   if (player.jetpackActive) {
+    //     console.log("stopped");
+    //     player.velocity.y = 0;
+    //   }
+    //   break;
     case "1":
       changeGun(guns[0]);
       break;
@@ -237,6 +289,9 @@ addEventListener("keyup", ({ key }) => {
       break;
     case "4":
       changeGun(guns[3]);
+      break;
+    case "5":
+      changeGun(guns[4]);
       break;
   }
 });
