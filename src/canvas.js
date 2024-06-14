@@ -270,14 +270,6 @@ document.querySelectorAll(".powerUp").forEach((btn, i) => {
     switch (i) {
       case 0:
         if (player.score < 1100) {
-          // PUmsg.style.color = "red";
-          // PUmsg.style.display = "block";
-          // PUmsg.textContent = "Not enough Credits!";
-          // setTimeout(() => {
-          //   PUmsg.style.color = "white";
-          //   PUmsg.style.display = "none";
-          //   PUmsg.textContent = "";
-          // }, 1500);
           updatePUmsg("Not enough credits!!", "red");
           return;
         }
@@ -285,13 +277,14 @@ document.querySelectorAll(".powerUp").forEach((btn, i) => {
         if (player.health > 80) player.health = 100;
         else player.health += 20;
         usePowerUp();
+        updatePUmsg('Health increased by 20HP','green');
         break;
       case 1:
-        if (player.score < 2250) {
+        if (player.score < 1250) {
           updatePUmsg("Not enough credits!!", "red");
           return;
         }
-        player.score -= 2250;
+        player.score -= 1250;
         guns.forEach((gun) => {
           if (gun.name === currentGun.name) {
             console.log(gun.ammo);
@@ -301,13 +294,14 @@ document.querySelectorAll(".powerUp").forEach((btn, i) => {
           }
         });
         usePowerUp();
+        updatePUmsg('Ammo increased by 1 mag capacity','green');
         break;
       case 2:
-        if (player.score < 1200) {
+        if (player.score < 1000) {
           updatePUmsg("Not enough credits!!", "red");
           return;
         }
-        player.score -= 1200;
+        player.score -= 1000;
         Pvelocity = 7.5;
         speedDur += 15;
         if (!speedPUTimeout) {
@@ -321,13 +315,14 @@ document.querySelectorAll(".powerUp").forEach((btn, i) => {
           }, speedDur * 1000);
         }
         usePowerUp();
+        updatePUmsg('Speed boosted for 15s','green');
         break;
       case 3:
-        if (player.score < 1600) {
+        if (player.score < 1400) {
           updatePUmsg("Not enough credits!!", "red");
           return;
         }
-        player.score -= 1600;
+        player.score -= 1400;
         damageDur += 15;
         if (!damagePUTimeout) {
           guns.forEach((gun) => {
@@ -347,6 +342,7 @@ document.querySelectorAll(".powerUp").forEach((btn, i) => {
           }, damageDur * 1000);
         }
         usePowerUp();
+        updatePUmsg('Damage is doubled for all guns for 15s','green');
         break;
     }
   });

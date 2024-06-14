@@ -15,6 +15,7 @@ let collisionDetected,
   lastGun,
   speedPUTimeout = null,
   damagePUTimeout = null,
+  PUmsgTimeout = null,
   duration = 300,
   speedDur = 0,
   damageDur = 0,
@@ -157,7 +158,7 @@ restartBtn.onclick = () => {
 window.onload = () => {
   pauseScr.style.display = "none";
   powerUpScr.style.display = "none";
-  PUmsg.style.display = "none";
+  // PUmsg.style.display = "none";
   startGame();
 };
 
@@ -174,13 +175,28 @@ function usePowerUp() {
   decreaseTimer();
 }
 
-function updatePUmsg(msg,color) {
+function updatePUmsg(msg, color) {
   PUmsg.style.color = color;
-  PUmsg.style.display = "block";
+  PUmsg.classList.add("fade-in");
+  PUmsg.classList.remove("fade-out");
+  // PUmsg.style.display = "block";
   PUmsg.textContent = msg;
-  setTimeout(() => {
-    PUmsg.style.color = "white";
-    PUmsg.style.display = "none";
-    PUmsg.textContent = "";
-  }, 1500);
+  if (!PUmsgTimeout) {
+    PUmsgTimeout = setTimeout(() => {
+      PUmsg.style.color = "white";
+      // PUmsg.style.display = "none";
+      PUmsg.classList.remove("fade-in");
+      PUmsg.classList.add("fade-out");
+      PUmsgTimeout = null;
+    }, 1500);
+  } else {
+    clearTimeout(PUmsgTimeout);
+    PUmsgTimeout = setTimeout(() => {
+      PUmsg.style.color = "white";
+      // PUmsg.style.display = "none";
+      PUmsg.classList.remove("fade-in");
+      PUmsg.classList.add("fade-out");
+      PUmsgTimeout = null;
+    }, 1500);
+  }
 }
