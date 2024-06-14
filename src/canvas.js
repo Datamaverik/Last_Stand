@@ -104,18 +104,6 @@ const bulletTrack = new Bullet({
 
 currentGun = UZI;
 changeGun(UZI);
-const keys = {
-  right: {
-    pressed: false,
-  },
-  left: {
-    pressed: false,
-  },
-};
-const mouse = {
-  x: undefined,
-  y: undefined,
-};
 
 function changeGun(gun) {
   if (currentGun.isFiring || currentGun.isReloading) return;
@@ -146,6 +134,61 @@ function changeGun(gun) {
 
   //  updating the bullet track
   bulletTrack.velocity = currentGun.velocity;
+}
+
+const keys = {
+  right: {
+    pressed: false,
+  },
+  left: {
+    pressed: false,
+  },
+};
+const mouse = {
+  x: undefined,
+  y: undefined,
+};
+
+function updateParticles() {
+  if (player.jetpackActive) {
+    for (let i = 0; i < 10; i++) {
+      const p = new Particle(
+        player.position.x + player.width / 2,
+        player.position.y + player.height,
+        (Math.random() * 2 * speed - speed) / 2,
+        Math.random() * speed
+      );
+      particles.push(p);
+    }
+  }
+  for (let i = 0; i < particles.length; i++) {
+    c.fillStyle =
+      "rgba(" +
+      (260 - particles[i].life * 2) +
+      "," +
+      (particles[i].life * 2 + 50) +
+      "," +
+      particles[i].life * 2 +
+      "," +
+      ((max - particles[i].life) / max) * 0.4 +
+      ")";
+    c.beginPath();
+    c.arc(
+      particles[i].x,
+      particles[i].y,
+      ((max - particles[i].life) / max) * (size / 2) + size / 2,
+      0,
+      2 * Math.PI
+    );
+    c.fill();
+    particles[i].x += particles[i].xs;
+    particles[i].y += particles[i].ys;
+    particles[i].life++;
+    if (particles[i].life >= max) {
+      particles.splice(i, 1);
+      i--;
+    }
+  }
 }
 
 function animate() {
@@ -204,6 +247,11 @@ function animate() {
   ) {
     player.velocity.y = 0;
     player.grounded = true;
+  }
+
+  //  adding fire effect if jetpack is active
+  if(player.jetpackActive){
+    updateParticles();
   }
 }
 

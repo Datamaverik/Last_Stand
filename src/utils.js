@@ -4,6 +4,9 @@ const c = canvas.getContext("2d");
 canvas.width = 1224;
 canvas.height = 576;
 
+const max = 60,
+  speed = 3,
+  size = 20;
 let collisionDetected,
   theta,
   lastKey,
@@ -13,7 +16,6 @@ let collisionDetected,
   zombieInterval = null,
   color = "white",
   currentGun,
-  lastGun,
   speedPUTimeout = null,
   damagePUTimeout = null,
   PUmsgTimeout = null,
@@ -21,8 +23,9 @@ let collisionDetected,
   speedDur = 0,
   damageDur = 0,
   Pvelocity = 3.8,
-  zombieCount = 0;
-zombies = [];
+  zombieCount = 0,
+  zombies = [],
+  particles = [];
 
 const Hmeter = document.getElementById("Hmeter"),
   Bmeter = document.getElementById("Bmeter"),

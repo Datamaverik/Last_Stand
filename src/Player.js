@@ -59,7 +59,7 @@ class Player {
   }
 
   toggleJetpack() {
-    if (this.fuel > 0) {
+    if (this.fuel > 20) {
       this.jetpackActive = !this.jetpackActive;
     }
   }
