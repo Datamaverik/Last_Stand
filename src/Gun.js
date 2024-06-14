@@ -141,7 +141,6 @@ class Gun {
       this.isReloading = false; // Reset reloading flag
     }, this.reloadTime * 1000);
   }
-  // console.log("Ammo left: " + this.ammo);
 }
 
 const guns = [];

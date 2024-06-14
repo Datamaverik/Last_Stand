@@ -1,30 +1,40 @@
 const gravity = 0.5;
 
 //  initialize objects to be rendered
-spawnZombies(1);
+// spawnZombies(1);
 const player = new Player({
   collisionBlocks: blocks,
   zombies,
 });
+// const zombie = new Zombie({
+//   position: {x:10,y:100},
+//   velocity: { x: 0, y: 0 },
+//   collisionBlocks: blocks,
+//   health: 300,
+//   zombies,
+//   speed: 0.15,
+//   height: 120,
+//   width: 60,
+//   damage: 30,
+//   attackFreq: 6000,
+//   color: "gray",
+// });
 Hmeter.value = player.health / 100;
 const platform = new Platform({
   position: { x: canvas.width / 2 - 75, y: 250 },
   width: 150,
 });
-const base = new Platform({
-  position: { x: 0, y: 556 },
-  width: canvas.width,
-});
 //  creating guns
-const M416 = new Gun({
+const M4A1 = new Gun({
   ammo: 60,
   gunrate: 360,
   blocks: blocks,
   damage: 10,
   mag: 30,
-  name: "M416",
+  name: "M4A1",
   velocity: 8,
   player: player,
+  reloadTime: 3.1,
 });
 const AWM = new Gun({
   ammo: 5,
@@ -35,28 +45,31 @@ const AWM = new Gun({
   name: "AWM",
   velocity: 10.5,
   player: player,
+  reloadTime: 3.6,
 });
 const AKM = new Gun({
   ammo: 60,
   gunrate: 260,
   blocks: blocks,
-  damage: 15,
+  damage: 17,
   mag: 30,
   name: "AKM",
   velocity: 7,
   player: player,
+  reloadTime: 2.35,
 });
 const DEagle = new Gun({
   ammo: 30,
   gunrate: 120,
   blocks: blocks,
-  damage: 8,
+  damage: 13,
   mag: 15,
   name: "DEagle",
   velocity: 5,
   player: player,
+  reloadTime: 2,
 });
-guns.push(M416);
+guns.push(M4A1);
 guns.push(AWM);
 guns.push(AKM);
 guns.push(DEagle);
@@ -92,6 +105,7 @@ function changeGun(gun) {
 
   //  update the current gun
   currentGun = gun;
+  gunIcon.innerHTML = gunSvg[currentGun.name];
   const factor = currentGun.magLimit / 100;
 
   //  updating the meter and texts
@@ -126,9 +140,10 @@ function animate() {
     zombies[i].update();
     zombies[i].detectPlayerCollision(player);
   }
+  // zombie.update();
+  // zombie.detectPlayerCollision(player);
   player.zombies = zombies;
   platform.draw();
-  base.draw();
   theta = calculateAngle(player);
 
   const trajectoryPoints = bulletTrack.calculateTrajectoryPoints(
@@ -157,15 +172,6 @@ function animate() {
       platform.position.y &&
     player.position.x + player.width >= platform.position.x &&
     player.position.x <= platform.position.x + platform.width
-  ) {
-    player.velocity.y = 0;
-    player.grounded = true;
-  }
-  if (
-    player.position.y + player.height <= base.position.y &&
-    player.position.y + player.height + player.velocity.y >= base.position.y &&
-    player.position.x + player.width >= base.position.x &&
-    player.position.x <= base.position.x + base.width
   ) {
     player.velocity.y = 0;
     player.grounded = true;
@@ -277,7 +283,7 @@ document.querySelectorAll(".powerUp").forEach((btn, i) => {
         if (player.health > 80) player.health = 100;
         else player.health += 20;
         usePowerUp();
-        updatePUmsg('Health increased by 20HP','green');
+        updatePUmsg("Health increased by 20HP", "green");
         break;
       case 1:
         if (player.score < 1250) {
@@ -294,7 +300,7 @@ document.querySelectorAll(".powerUp").forEach((btn, i) => {
           }
         });
         usePowerUp();
-        updatePUmsg('Ammo increased by 1 mag capacity','green');
+        updatePUmsg("Ammo increased by 1 mag capacity", "green");
         break;
       case 2:
         if (player.score < 1000) {
@@ -315,7 +321,7 @@ document.querySelectorAll(".powerUp").forEach((btn, i) => {
           }, speedDur * 1000);
         }
         usePowerUp();
-        updatePUmsg('Speed boosted for 15s','green');
+        updatePUmsg("Speed boosted for 15s", "green");
         break;
       case 3:
         if (player.score < 1400) {
@@ -342,7 +348,7 @@ document.querySelectorAll(".powerUp").forEach((btn, i) => {
           }, damageDur * 1000);
         }
         usePowerUp();
-        updatePUmsg('Damage is doubled for all guns for 15s','green');
+        updatePUmsg("Damage is doubled for all guns for 15s", "green");
         break;
     }
   });

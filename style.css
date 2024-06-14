@@ -38,10 +38,13 @@ body {
 
 #header {
   position: absolute;
-  width: 35%;
+  width: 40%;
   padding: 15px;
   padding-top: 0px;
   left: 0;
+}
+#gunIcon svg{
+  fill: white;
 }
 #shopCont {
   position: absolute;
@@ -56,7 +59,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  left: 35%;
+  left: 40%;
   width: 50%;
 }
 #shopCont p {
@@ -91,7 +94,7 @@ body {
   height: 35px;
   padding: 0px 7px 0px 7px;
   border-radius: 20px;
-  margin-right: 10px;
+  margin-right: 15px;
 }
 meter::-webkit-meter-optimum-value,
 meter::-webkit-meter-suboptimum-value,
@@ -131,7 +134,7 @@ meter::-webkit-meter-even-less-good-value {
 #gun,
 #PUmsg {
   font-family: Pixeloid;
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   color: white;
   margin: 0;
 }

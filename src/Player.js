@@ -47,6 +47,10 @@ class Player {
             this.collisionBlocks.splice(i, 1);
           }
         }
+        //  Call the jump method of jumping zombie
+        if (this instanceof JumpingZombie) {
+          this.jump();
+        }
 
         if (this.velocity.x > 0) {
           this.velocity.x = 0;
@@ -67,6 +71,10 @@ class Player {
       if (this === zombie) continue;
 
       if (collision({ obj1: this, obj2: zombie })) {
+        //  Call the jump method of jumping zombie
+        if (this instanceof JumpingZombie) {
+          this.jump();
+        }
         if (this.velocity.x > 0) {
           this.velocity.x = 0;
           this.position.x = zombie.position.x - 0.1 - this.width;
@@ -147,13 +155,16 @@ class Player {
 class Zombie extends Player {
   constructor({
     position,
+    speed,
     velocity,
-    health = 100,
+    health = 70,
     height = 80,
     width = 40,
     gravity = 0.5,
     collisionBlocks,
     attackFreq = 2000,
+    damage,
+    color,
   }) {
     super({ collisionBlocks, zombies });
 
@@ -164,20 +175,22 @@ class Zombie extends Player {
     this.height = height;
     this.gravity = gravity;
     this.lastAttackTime = 0;
-    this.damage = 10 + 0.5 * zombies.length;
+    this.damage = damage;
     this.attackFreq = attackFreq;
+    this.speed = speed;
+    this.color = color;
   }
 
   draw() {
-    c.fillStyle = "brown";
+    
+    c.fillStyle = this.color;
     c.fillRect(this.position.x, this.position.y, this.width, this.height);
   }
 
   attack(player, attackRate) {
-    this.damage = 10 + 0.5 * zombies.length;
     const currentTime = Date.now();
     if (currentTime - this.lastAttackTime >= attackRate) {
-      player.health -= this.damage;
+      player.health -= (this.damage + 0.25 * zombies.length);
       if (player instanceof Player) Hmeter.value = player.health / 100;
       if (player.health <= 0) return true;
       this.lastAttackTime = currentTime;
@@ -204,10 +217,53 @@ class Zombie extends Player {
     } else {
       const factor = player.position.x - this.position.x;
       if (factor > 0) {
-        this.velocity.x = 0.3;
+        this.velocity.x = this.speed;
       } else if (factor < 0) {
-        this.velocity.x = -0.3;
+        this.velocity.x = -this.speed;
       }
+    }
+  }
+}
+
+class JumpingZombie extends Zombie {
+  constructor({
+    position,
+    velocity,
+    health = 70,
+    height = 80,
+    width = 40,
+    gravity = 0.5,
+    collisionBlocks,
+    attackFreq = 2000,
+    jumpStrength = 15,
+    damage,
+    speed
+  }) {
+    super({
+      position,
+      velocity,
+      health,
+      height,
+      width,
+      gravity,
+      collisionBlocks,
+      attackFreq,
+      color,
+      speed,
+      damage
+    });
+    this.jumpStrength = jumpStrength;
+  }
+
+  draw() {
+    c.fillStyle = 'green';
+    c.fillRect(this.position.x, this.position.y, this.width, this.height);
+  }
+
+  jump() {
+    if (this.grounded) {
+      this.velocity.y = -this.jumpStrength;
+      this.grounded = false;
     }
   }
 }
