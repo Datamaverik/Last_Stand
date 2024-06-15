@@ -19,11 +19,10 @@ class Player {
     this.lastInjured = 0;
     this.score = 0;
 
-    this.fuel = 100;
     this.jetpackActive = false;
     this.maxFuel = 100;
     this.fuelUsage = 0.05;
-    this.refuelRate = 0.015;
+    this.refuelRate = 0.002;
     this.jetpackGravity = 0.01;
   }
 
@@ -35,8 +34,8 @@ class Player {
   update() {
     //  Jetpack logic
     //  jumpSt = 13
-    if (this.jetpackActive && this.fuel > 0) {
-      this.fuel -= this.fuelUsage;
+    if (this.jetpackActive && fuel > 0) {
+      fuel -= this.fuelUsage;
       this.gravity = this.jetpackGravity;
       this.jumpStrength = 3;
     } else {
@@ -46,9 +45,8 @@ class Player {
     }
 
     //  refuel logic
-    if (!this.jetpackActive && this.fuel < this.maxFuel)
-      this.fuel += this.refuelRate;
-    Fmeter.value = this.fuel / 100;
+    if (!this.jetpackActive && fuel < this.maxFuel) fuel += this.refuelRate;
+    Fmeter.value = fuel / 100;
     this.draw();
 
     this.position.x += this.velocity.x;
@@ -59,8 +57,16 @@ class Player {
   }
 
   toggleJetpack() {
-    if (this.fuel > 20) {
-      this.jetpackActive = !this.jetpackActive;
+    if (fuel > 0) {
+      if (this.jetpackActive) {
+        this.jetpackActive = false;
+        jetpackSoundOff();
+      } else {
+        if (fuel > 20) {
+          this.jetpackActive = true;
+          jetpackSoundOn();
+        }
+      }
     }
   }
 
@@ -162,6 +168,8 @@ class Player {
           ) {
             // console.log("health rem: " + this.health);
             this.health -= 10;
+            if (randomIntFromRange(1, 10) % 2 === 0) playSound("Hurt", 0.5);
+            else playSound("Hurt2", 0.5);
             if (this instanceof Player) {
               Hmeter.value = this.health / 100;
               if (this.health <= 0)
@@ -224,7 +232,15 @@ class Zombie extends Player {
       }
       player.health -= this.damage + 0.25 * zombies.length;
       if (player instanceof Player) Hmeter.value = player.health / 100;
-      if (player.health <= 0) return true;
+      if (player.health <= 0) {
+        if (player instanceof Environment) {
+          cannonLeft.ammo -= 6;
+          cannonRight.ammo -= 6;
+          console.log("left cannon ammo: " + cannonLeft.ammo);
+          console.log("right cannon ammo: " + cannonRight.ammo);
+        }
+        return true;
+      }
       this.lastAttackTime = currentTime;
     }
     return false;

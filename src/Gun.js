@@ -10,6 +10,7 @@ class Gun {
     name,
     player,
     spread,
+    color = "gray",
   }) {
     this.bullets = [];
     this.ammo = ammo;
@@ -31,6 +32,7 @@ class Gun {
     this.width = 55;
     this.height = 20;
     this.recoilOffset = { x: 0, y: 0 };
+    this.color = color;
   }
 
   // Method to add a new bullet to the array
@@ -101,6 +103,7 @@ class Gun {
       ammo.textContent = `${this.mag}/${this.ammo}`;
     }
     if (this.mag <= 0) {
+      sounds["empty"].play();
       color = "red";
       ammo.style.color = color;
     }
@@ -113,7 +116,7 @@ class Gun {
       this.player.position.y + this.player.height / 2 + this.recoilOffset.y
     );
     c.rotate(theta);
-    c.fillStyle = "gray";
+    c.fillStyle = this.color;
     c.fillRect(0, -this.height / 2, this.width, this.height);
     c.restore();
   }
@@ -177,3 +180,126 @@ class Gun {
 }
 
 const guns = [];
+
+class Cannon extends Gun {
+  constructor({
+    x,
+    y,
+    width,
+    height,
+    ammo,
+    gunrate,
+    velocity,
+    blocks,
+    damage,
+    reloadTime,
+    name,
+    player,
+    spread,
+    direction,
+    angle,
+    alpha,
+    offset,
+    color,
+  }) {
+    super({
+      ammo,
+      gunrate,
+      velocity,
+      blocks,
+      damage,
+      reloadTime,
+      name,
+      player,
+      spread,
+      color,
+    });
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.direction = direction;
+    this.angle = angle;
+    this.alpha = alpha;
+    this.offset = offset;
+    this.interval;
+    this.color = color;
+  }
+
+  // Override the fireBullet method to use the fixed position and calculated angle
+  fireBullet() {
+    if (this.ammo > 0) {
+      const cannonBall1 = new Bullet({
+        position: {
+          x: this.x + this.width * Math.cos(this.alpha) - this.offset.x,
+          y: this.y + this.width * Math.sin(this.alpha),
+        },
+        velocity: this.velocity,
+        theta: this.alpha,
+        collisionBlocks: this.blocks,
+        zombies,
+        damage: this.damage,
+        player: this.player,
+        radius: 12,
+        color: "gray",
+      });
+      const cannonBall2 = new Bullet({
+        position: {
+          x: this.x + this.width * Math.cos(this.alpha) - this.offset.x,
+          y: this.y + this.width * Math.sin(this.alpha),
+        },
+        velocity: this.velocity,
+        theta: this.alpha + 0.05,
+        collisionBlocks: this.blocks,
+        zombies,
+        damage: this.damage,
+        player: this.player,
+        radius: 12,
+        color: "gray",
+      });
+      const cannonBall3 = new Bullet({
+        position: {
+          x: this.x + this.width * Math.cos(this.alpha) - 20,
+          y: this.y + this.width * Math.sin(this.alpha),
+        },
+        velocity: this.velocity,
+        theta: this.alpha - 0.05,
+        collisionBlocks: this.blocks,
+        zombies,
+        damage: this.damage,
+        player: this.player,
+        radius: 12,
+        color: "gray",
+      });
+      cannonBall1.isCannon = true;
+      cannonBall2.isCannon = true;
+      cannonBall3.isCannon = true;
+      playSound("cannon", 0.5);
+      this.addBullet(cannonBall1);
+      this.addBullet(cannonBall2);
+      this.addBullet(cannonBall3);
+      this.ammo -= 3;
+    }
+  }
+
+  startFiring() {
+    const intervalTime = 60000 / this.gunrate;
+
+    this.interval = setInterval(() => {
+      this.fireBullet();
+    }, intervalTime);
+  }
+
+  stopFiring() {
+    clearInterval(this.interval);
+  }
+
+  draw() {
+    c.save();
+    c.translate(this.x, this.y);
+    c.rotate(this.angle);
+    c.fillStyle = this.color;
+    c.fillRect(0, -this.height / 2, this.width, this.height);
+    c.restore();
+  }
+}

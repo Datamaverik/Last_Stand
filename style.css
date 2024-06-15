@@ -114,6 +114,7 @@ meter::-webkit-meter-even-less-good-value {
 #timer3 {
   border: 3px solid white;
   background-color: rgb(67, 73, 87);
+  background-color: rgb(108, 120, 140);
   width: 80px;
   height: 80px;
   flex-shrink: 0;
@@ -144,8 +145,9 @@ meter::-webkit-meter-even-less-good-value {
   margin: 0;
 }
 #score{
-  margin-top: 15px;
+  margin-top: 6px;
 }
+
 #PUmsg {
   transition: cubic-bezier(0.075, 0.82, 0.165, 1);
   z-index: 1;
@@ -170,9 +172,7 @@ button {
   transition: 0.3s ease;
   box-shadow: 1px 1px 3px black;
 }
-#shop {
-  margin-bottom: -10px;
-}
+
 button:hover {
   cursor: pointer;
   transform: scale(1.15);

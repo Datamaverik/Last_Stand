@@ -27,7 +27,7 @@ const platform = new Platform({
 //  creating guns
 const M4A1 = new Gun({
   ammo: 60,
-  gunrate: 360,
+  gunrate: 731.71,
   blocks: blocks,
   damage: 14,
   mag: 30,
@@ -51,7 +51,7 @@ const AWM = new Gun({
 });
 const AKM = new Gun({
   ammo: 60,
-  gunrate: 246,
+  gunrate: 500,
   blocks: blocks,
   damage: 17.5,
   mag: 30,
@@ -62,20 +62,20 @@ const AKM = new Gun({
   spread: 1.5 * (Math.PI / 180),
 });
 const DEagle = new Gun({
-  ammo: 28,
-  gunrate: 82,
+  ammo: 36,
+  gunrate: 375,
   blocks: blocks,
-  damage: 32,
-  mag: 7,
+  damage: 40.25,
+  mag: 9,
   name: "DEagle",
   velocity: 5,
   player: player,
-  reloadTime: 2,
-  spread: 1.2 * (Math.PI / 180),
+  reloadTime: 2.3,
+  spread: 2.5 * (Math.PI / 180),
 });
 const UZI = new Gun({
   ammo: 66,
-  gunrate: 778,
+  gunrate: 1578.95,
   blocks: blocks,
   damage: 7.5,
   mag: 33,
@@ -91,6 +91,46 @@ guns.push(AKM);
 guns.push(DEagle);
 guns.push(UZI);
 
+const cannonLeft = new Cannon({
+  x: 576,
+  y: 525,
+  width: 40,
+  height: 70,
+  ammo: 45,
+  gunrate: 3,
+  velocity: 8,
+  blocks: blocks,
+  damage: 50,
+  reloadTime: 3,
+  name: "left",
+  player: player,
+  spread: 0,
+  direction: "left",
+  angle: 2.93,
+  alpha: -1.75,
+  offset: { x: 20, y: 0 },
+  color: "rgb(108, 120, 140)",
+});
+const cannonRight = new Cannon({
+  x: 733,
+  y: 533,
+  width: 40,
+  height: 70,
+  ammo: 45,
+  gunrate: 3,
+  velocity: 8,
+  blocks: blocks,
+  damage: 50,
+  reloadTime: 3,
+  name: "right",
+  player: player,
+  spread: 0,
+  direction: "right",
+  alpha: -1.3575,
+  angle: 3.42,
+  offset: { x: 0, y: 0 },
+  color: "rgb(108, 120, 140)",
+});
 const bulletTrack = new Bullet({
   position: {
     x: player.position.x + player.width / 2,
@@ -206,6 +246,10 @@ function animate() {
   platform.draw();
   theta = calculateAngle(player);
   currentGun.draw();
+  cannonLeft.draw();
+  cannonLeft.shoot();
+  cannonRight.draw();
+  cannonRight.shoot();
   const trajectoryPoints = bulletTrack.calculateTrajectoryPoints(
     {
       x:
@@ -250,7 +294,7 @@ function animate() {
   }
 
   //  adding fire effect if jetpack is active
-  if(player.jetpackActive){
+  if (player.jetpackActive) {
     updateParticles();
   }
 }
@@ -282,8 +326,31 @@ addEventListener("keydown", ({ key }) => {
     case "j":
       player.toggleJetpack();
       break;
+    case "s":
+      if (gamePaused) {
+        usePowerUp();
+        //  reset the cannons
+        cannonLeft.startFiring();
+        setTimeout(() => {
+          cannonRight.startFiring();
+        }, 10000);
+      } else {
+        gamePaused = true;
+        cannonLeft.stopFiring();
+        cannonRight.stopFiring();
+        powerUpScr.showModal();
+        powerUpScr.style.display = "flex";
+      }
+
+      break;
     case "Escape":
       if (gamePaused) {
+        //  reset the cannons
+        cannonLeft.startFiring();
+        setTimeout(() => {
+          cannonRight.startFiring();
+        }, 10000);
+
         playSound("pause");
         gamePaused = false;
         animate();
@@ -293,6 +360,8 @@ addEventListener("keydown", ({ key }) => {
         pauseScr.close();
         pauseScr.style.display = "none";
       } else {
+        cannonLeft.stopFiring();
+        cannonRight.stopFiring();
         playSound("pause");
         msg.textContent = 'Press "Esc" to resume';
         gamePaused = true;
@@ -359,17 +428,6 @@ addEventListener("mousedown", () => {
 addEventListener("mouseup", () => {
   currentGun.stopFiring();
 });
-
-shop.addEventListener("click", () => {
-  if (gamePaused) return;
-  gamePaused = true;
-  powerUpScr.showModal();
-  powerUpScr.style.display = "flex";
-});
-
-closeBtn.onclick = () => {
-  usePowerUp();
-};
 
 document.querySelectorAll(".powerUp").forEach((btn, i) => {
   btn.addEventListener("mouseenter", (e) => {
@@ -456,3 +514,14 @@ document.querySelectorAll(".powerUp").forEach((btn, i) => {
     }
   });
 });
+
+window.onload = () => {
+  pauseScr.style.display = "none";
+  powerUpScr.style.display = "none";
+  cannonLeft.startFiring();
+  setTimeout(() => {
+    cannonRight.startFiring();
+  }, 10000);
+  // PUmsg.style.display = "none";
+  startGame();
+};

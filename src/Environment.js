@@ -30,6 +30,14 @@ const blocks = [];
 const l = canvas.width / 2 - 175;
 const h = canvas.width / 2 + 175;
 
+blocks[0] = new Environment({
+  position: { x: l - 97, y: 486 },
+  size: { width: 70, height: 70 },
+});
+blocks[1] = new Environment({
+  position: { x: l - 20, y: 486 },
+  size: { width: 70, height: 70 },
+});
 blocks[2] = new Environment({
   position: { x: l, y: 416 },
   size: { width: 70, height: 70 },
@@ -40,14 +48,6 @@ blocks[3] = new Environment({
 });
 blocks[4] = new Environment({
   position: { x: h + 77, y: 416 },
-  size: { width: 70, height: 70 },
-});
-blocks[1] = new Environment({
-  position: { x: l - 20, y: 486 },
-  size: { width: 70, height: 70 },
-});
-blocks[0] = new Environment({
-  position: { x: l - 97, y: 486 },
   size: { width: 70, height: 70 },
 });
 blocks[5] = new Environment({
@@ -82,3 +82,4 @@ blocks[10] = new Environment({
   size: { width: canvas.width + 20, height: 20 },
   health: 1000000,
 });
+

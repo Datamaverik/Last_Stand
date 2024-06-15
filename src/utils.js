@@ -13,6 +13,7 @@ let collisionDetected,
   gamePaused = false,
   time,
   time2,
+  fuel = 100,
   zombieInterval = null,
   color = "white",
   currentGun,
@@ -88,7 +89,7 @@ function calculateAngle() {
 // Function to generate random positions within canvas boundaries
 function getRandomPosition() {
   const x = randomIntFromRange(1, 5) % 2 == 0 ? 10 : 1140;
-  const y = 400;
+  const y = 100;
   return { x, y };
 }
 
@@ -157,6 +158,8 @@ function formatTimer(seconds) {
 }
 
 function GameOver(text) {
+  cannonLeft.stopFiring();
+  cannonRight.stopFiring();
   msg.textContent = text;
   gamePaused = true;
   pauseScr.style.display = "flex";
@@ -194,21 +197,14 @@ function decreaseTimer() {
 
 function startGame() {
   zombieInterval = setInterval(() => {
-    spawnZombies(4500); // Spawn a zombie every 5 seconds
-  }, 4500);
+    spawnZombies(3500); // Spawn a zombie every 5 seconds
+  }, 3500);
   gamePaused = false;
   decreaseTimer();
 }
 
 restartBtn.onclick = () => {
   window.location.reload();
-};
-
-window.onload = () => {
-  pauseScr.style.display = "none";
-  powerUpScr.style.display = "none";
-  // PUmsg.style.display = "none";
-  // startGame();
 };
 
 function usePowerUp() {
@@ -276,6 +272,9 @@ const sounds = {
   Hurt2: new Audio("./sounds/Hurt2.mp3"),
   pause: new Audio("./sounds/pause.wav"),
   shop: new Audio("./sounds/shop.wav"),
+  cannon: new Audio("./sounds/cannon.wav"),
+  cannonHit: new Audio("./sounds/cannonHit.wav"),
+  empty: new Audio("./sounds/empty.wav"),
 };
 
 function playSound(sound, vol = 1) {
@@ -301,4 +300,14 @@ function stopRunSound() {
     RunSound.currentTime = 0; // Reset the sound to the beginning
     isRunning = false;
   }
+}
+
+const jetpack = new Audio("./sounds/jetpack.mp3");
+jetpack.loop = true; // Make the sound loop
+function jetpackSoundOn() {
+  jetpack.play();
+}
+function jetpackSoundOff() {
+  jetpack.pause();
+  jetpack.currentTime = 0;
 }
