@@ -34,19 +34,23 @@ class Player {
   update() {
     //  Jetpack logic
     //  jumpSt = 13
-    if (this.jetpackActive && fuel > 0) {
-      fuel -= this.fuelUsage;
-      this.gravity = this.jetpackGravity;
-      this.jumpStrength = 3;
-    } else {
-      this.gravity = 0.5;
-      this.jumpStrength = 13;
-      this.jetpackActive = false;
+    if (this instanceof Player && !(this instanceof Zombie)) {
+      if (this.jetpackActive && fuel > 0) {
+        fuel -= this.fuelUsage;
+        this.gravity = this.jetpackGravity;
+        this.jumpStrength = 3;
+      } else {
+        this.gravity = 0.5;
+        this.jumpStrength = 13;
+        this.jetpackActive = false;
+        jetpackSoundOff();
+      }
+
+      //  refuel logic
+      if (!this.jetpackActive && fuel < this.maxFuel) fuel += this.refuelRate;
+      Fmeter.value = fuel / 100;
     }
 
-    //  refuel logic
-    if (!this.jetpackActive && fuel < this.maxFuel) fuel += this.refuelRate;
-    Fmeter.value = fuel / 100;
     this.draw();
 
     this.position.x += this.velocity.x;
@@ -230,6 +234,7 @@ class Zombie extends Player {
         if (randomIntFromRange(1, 10) % 2 === 0) playSound("Hurt", 0.5);
         else playSound("Hurt2", 0.5);
       }
+      playZAttack(0.5);
       player.health -= this.damage + 0.25 * zombies.length;
       if (player instanceof Player) Hmeter.value = player.health / 100;
       if (player.health <= 0) {

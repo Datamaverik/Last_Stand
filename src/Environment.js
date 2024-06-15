@@ -1,8 +1,8 @@
 class Platform {
-  constructor({ position, width }) {
+  constructor({ position, width, height = 20 }) {
     this.position = position;
     this.width = width;
-    this.height = 20;
+    this.height = height;
   }
 
   draw() {
@@ -31,55 +31,73 @@ const l = canvas.width / 2 - 175;
 const h = canvas.width / 2 + 175;
 
 blocks[0] = new Environment({
-  position: { x: l - 97, y: 486 },
+  position: { x: -20, y: 0 },
   size: { width: 70, height: 70 },
 });
 blocks[1] = new Environment({
-  position: { x: l - 20, y: 486 },
+  position: { x: -20, y: 0 },
   size: { width: 70, height: 70 },
 });
 blocks[2] = new Environment({
-  position: { x: l, y: 416 },
+  position: { x: -20, y: 0 },
   size: { width: 70, height: 70 },
 });
 blocks[3] = new Environment({
-  position: { x: h, y: 416 },
+  position: { x: -20, y: 0 },
   size: { width: 70, height: 70 },
 });
 blocks[4] = new Environment({
-  position: { x: h + 77, y: 416 },
+  position: { x: -20, y: 0 },
   size: { width: 70, height: 70 },
 });
 blocks[5] = new Environment({
-  position: { x: h + 20, y: 486 },
+  position: { x: -20, y: 0 },
   size: { width: 70, height: 70 },
 });
 blocks[6] = new Environment({
-  position: { x: h + 97, y: 486 },
+  position: { x: -20, y: 0 },
+  size: { width: 70, height: 70 },
+});
+blocks[7] = new Environment({
+  position: { x: -20, y: 0 },
   size: { width: 70, height: 70 },
 });
 //  left boundary
-blocks[7] = new Environment({
+blocks[8] = new Environment({
   position: { x: -20, y: 0 },
   size: { width: 20, height: canvas.height },
   health: 1000000,
 });
 //  right boundary
-blocks[8] = new Environment({
+blocks[9] = new Environment({
   position: { x: canvas.width, y: 0 },
   size: { width: 20, height: canvas.height },
   health: 1000000,
 });
 //  Top cover
-blocks[9] = new Environment({
+blocks[10] = new Environment({
   position: { x: 0, y: -20 },
   size: { width: canvas.width, height: 20 },
   health: 1000000,
 });
 //  base
-blocks[10] = new Environment({
+blocks[11] = new Environment({
   position: { x: -20, y: 556 },
   size: { width: canvas.width + 20, height: 20 },
   health: 1000000,
 });
 
+blocks.forEach((b) => {
+  b.isDeployed = true;
+});
+
+for (let i = 0; i < 8; i++) blocks[i].isDeployed = false;
+// blocks[0].isDeployed = false;
+
+defenseBlockBtn.onclick = () => {
+  defenseBlockSetup = true;
+  inventoryScr.close();
+  inventoryScr.style.display = "none";
+};
+
+function setBlocks() {}

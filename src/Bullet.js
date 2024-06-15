@@ -49,7 +49,7 @@ class Bullet {
       if (bulletCollision({ bul: this, obj: collisionBlock })) {
         collisionBlock.health -= this.damage;
         if (collisionBlock.health < 0) this.collisionBlocks.splice(i, 1);
-        if (this.isCannon) playSound("cannonHit",0.2);
+        if (this.isCannon) playSound("cannonHit", 0.2);
         return true;
       }
     }
@@ -61,10 +61,15 @@ class Bullet {
 
       if (bulletCollision({ bul: this, obj: zombie })) {
         if (zombie.health > 0) zombie.health -= this.damage;
-        if (zombie.health <= 0) this.zombies.splice(i, 1);
+        if (zombie.health <= 0) {
+          this.zombies.splice(i, 1);
+          zombieCount--;
+          console.log('zombie count: '+zombieCount);
+        }
+        if(zombieCount<2)HordeSoundOff();
         this.player.score += this.damage;
         score.textContent = `Score:💰${this.player.score}`;
-        if (this.isCannon) playSound("cannonHit",0.2);
+        if (this.isCannon) playSound("cannonHit", 0.2);
         return true;
       }
     }

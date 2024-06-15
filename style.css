@@ -15,7 +15,7 @@
 
 body {
   margin: 0;
-  background-color: rgb(18, 22, 27);
+  background-color: hsl(213, 20%, 9%);
   height: 100vh;
   width: 100vw;
   display: flex;
@@ -44,7 +44,7 @@ body {
   left: 0;
 }
 #gunIcon svg {
-  fill: white;
+  fill: rgb(255, 255, 255);
 }
 #shopCont {
   position: absolute;
@@ -63,7 +63,7 @@ body {
   width: 50%;
 }
 #shopCont p {
-  color: white;
+  color: rgb(255, 255, 255);
   font-family: Pixeloid;
   font-size: 1.3rem;
 }
@@ -86,6 +86,19 @@ body {
 }
 #PUdesc {
   font-family: Pixeloid;
+}
+
+#inventoryScr {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  z-index: 1;
+  padding: 30px;
+}
+#inventoryScr p {
+  font-family: Pixeloid;
+  font-size: 1.7rem;
+  margin: 0px;
 }
 #Hmeter,
 #Bmeter,
@@ -144,7 +157,7 @@ meter::-webkit-meter-even-less-good-value {
   color: white;
   margin: 0;
 }
-#score{
+#score {
   margin-top: 6px;
 }
 

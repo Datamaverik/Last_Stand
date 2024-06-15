@@ -11,20 +11,26 @@ let collisionDetected,
   theta,
   lastKey,
   gamePaused = false,
+  defenseBlockSetup = false,
+  inventoryOpen = false,
+  preparationPhase = true,
   time,
   time2,
   fuel = 100,
   zombieInterval = null,
+  cannonInterval = null,
   color = "white",
   currentGun,
   speedPUTimeout = null,
   damagePUTimeout = null,
   PUmsgTimeout = null,
-  duration = 300,
+  duration = 240,
   speedDur = 0,
+  blockInd = 0,
   damageDur = 0,
   Pvelocity = 3.8,
   zombieCount = 0,
+  totalZombies = 0,
   zombies = [],
   particles = [];
 
@@ -40,11 +46,18 @@ const Hmeter = document.getElementById("Hmeter"),
   ammo = document.getElementById("ammo"),
   gunText = document.getElementById("gun"),
   powerUpScr = document.getElementById("powerUpScr"),
+  inventoryScr = document.getElementById("inventoryScr"),
   shop = document.getElementById("shop"),
   PUdesc = document.getElementById("PUdesc"),
   score = document.getElementById("score"),
   gunIcon = document.getElementById("gunIcon"),
+  defenseBlockBtn = document.getElementById("defenseBlock"),
   PUmsg = document.getElementById("PUmsg");
+
+const mouse = {
+  x: undefined,
+  y: undefined,
+};
 
 function randomIntFromRange(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -98,7 +111,11 @@ function spawnZombies(interval) {
   if (gamePaused || duration <= 0) return;
 
   zombieCount++;
-  if (zombieCount % 10 === 0) {
+  totalZombies++;
+  console.log("zombie count: " + zombieCount);
+  console.log("total zombie count: " + totalZombies);
+  if (zombieCount > 0) HordeSoundOn();
+  if (totalZombies % 10 === 0) {
     setTimeout(() => {
       const position = getRandomPosition();
       const zombie = new JumpingZombie({
@@ -115,7 +132,7 @@ function spawnZombies(interval) {
       });
       zombies.push(zombie);
     }, interval);
-  } else if (zombieCount % 15 === 0) {
+  } else if (totalZombies % 15 === 0) {
     setTimeout(() => {
       const position = getRandomPosition();
       const zombie = new Zombie({
@@ -149,6 +166,7 @@ function spawnZombies(interval) {
       zombies.push(zombie);
     }, interval);
   }
+  if (zombieCount < 2) HordeSoundOff();
 }
 
 function formatTimer(seconds) {
@@ -165,6 +183,7 @@ function GameOver(text) {
   pauseScr.style.display = "flex";
   pauseScr.showModal();
   clearTimeout(zombieInterval);
+  HordeSoundOff();
 }
 
 function decreaseTimer() {
@@ -196,11 +215,28 @@ function decreaseTimer() {
 }
 
 function startGame() {
-  zombieInterval = setInterval(() => {
-    spawnZombies(3500); // Spawn a zombie every 5 seconds
-  }, 3500);
+  setTimeout(() => {
+    zombieInterval = setInterval(() => {
+      spawnZombies(3500);
+    }, 3500);
+    updatePUmsg("Preparation time ends!! ZOMBIES INCOMING!!!", "red");
+    preparationPhase = false;
+    defenseBlockSetup = false;
+    cannonLeft.startFiring();
+    cannonInterval = setTimeout(() => {
+      cannonRight.startFiring();
+    }, 10000);
+    powerUpScr.close();
+    powerUpScr.style.display = "none";
+  }, 30000);
+
   gamePaused = false;
+  preparationPhase = true;
   decreaseTimer();
+  updatePUmsg(
+    "Preparation time: 30s. Place defense blocks, traps and mines strategically",
+    "green"
+  );
 }
 
 restartBtn.onclick = () => {
@@ -277,6 +313,23 @@ const sounds = {
   empty: new Audio("./sounds/empty.wav"),
 };
 
+const Zsounds = [
+  new Audio("./sounds/ZombieAttack1.mp3"),
+  new Audio("./sounds/ZombieAttack2.mp3"),
+  new Audio("./sounds/ZombieAttack3.mp3"),
+  new Audio("./sounds/ZombieAttack4.mp3"),
+  new Audio("./sounds/ZombieAttack5.mp3"),
+  new Audio("./sounds/ZombieAttack6.mp3"),
+  new Audio("./sounds/ZombieAttack7.mp3"),
+];
+
+function playZAttack(vol = 1) {
+  const ind = randomIntFromRange(0, 6);
+  const soundClone = Zsounds[ind].cloneNode();
+  soundClone.volume = vol;
+  soundClone.play();
+}
+
 function playSound(sound, vol = 1) {
   if (sounds[sound]) {
     const soundClone = sounds[sound].cloneNode();
@@ -310,4 +363,15 @@ function jetpackSoundOn() {
 function jetpackSoundOff() {
   jetpack.pause();
   jetpack.currentTime = 0;
+}
+
+const Zombie_Horde = new Audio("./sounds/Zombie_Horde.mp3");
+Zombie_Horde.volume = 0.25;
+Zombie_Horde.loop = true; // Make the sound loop
+function HordeSoundOn() {
+  Zombie_Horde.play();
+}
+function HordeSoundOff() {
+  Zombie_Horde.pause();
+  // Zombie_Horde.currentTime = 0;
 }

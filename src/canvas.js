@@ -184,10 +184,6 @@ const keys = {
     pressed: false,
   },
 };
-const mouse = {
-  x: undefined,
-  y: undefined,
-};
 
 function updateParticles() {
   if (player.jetpackActive) {
@@ -269,7 +265,7 @@ function animate() {
     if (gun.bullets.length > 0) gun.shoot();
   });
   for (let i = 0; i < blocks.length; i++) {
-    blocks[i].draw();
+    if (blocks[i].isDeployed) blocks[i].draw();
   }
 
   //    player movements
@@ -294,8 +290,14 @@ function animate() {
   }
 
   //  adding fire effect if jetpack is active
-  if (player.jetpackActive) {
     updateParticles();
+  
+
+  //  drawing defense block ghost
+  if (defenseBlockSetup) {
+    // c.fillStyle = `hsla(${213}, ${20}%, ${9}%, ${0.373})`;
+    c.strokeStyle = "white";
+    c.strokeRect(mouse.x - 70, mouse.y, 70, 70);
   }
 }
 
@@ -341,18 +343,18 @@ addEventListener("keydown", ({ key }) => {
         powerUpScr.showModal();
         powerUpScr.style.display = "flex";
       }
-
       break;
     case "Escape":
       if (gamePaused) {
         //  reset the cannons
         cannonLeft.startFiring();
-        setTimeout(() => {
+        cannonInterval = setTimeout(() => {
           cannonRight.startFiring();
         }, 10000);
 
         playSound("pause");
         gamePaused = false;
+        if (zombieCount > 0) HordeSoundOn();
         animate();
         decreaseTimer();
         powerUpScr.close();
@@ -362,9 +364,11 @@ addEventListener("keydown", ({ key }) => {
       } else {
         cannonLeft.stopFiring();
         cannonRight.stopFiring();
+        clearInterval(cannonInterval);
         playSound("pause");
         msg.textContent = 'Press "Esc" to resume';
         gamePaused = true;
+        HordeSoundOff();
         powerUpScr.close();
         powerUpScr.style.display = "none";
         pauseScr.showModal();
@@ -389,12 +393,17 @@ addEventListener("keyup", ({ key }) => {
     case "r":
       currentGun.reload();
       break;
-    // case "w":
-    //   if (player.jetpackActive) {
-    //     console.log("stopped");
-    //     player.velocity.y = 0;
-    //   }
-    //   break;
+    case "i":
+      if (!inventoryOpen && preparationPhase) {
+        inventoryOpen = true;
+        inventoryScr.showModal();
+        inventoryScr.style.display = "flex";
+      } else {
+        inventoryOpen = false;
+        inventoryScr.close();
+        inventoryScr.style.display = "none";
+      }
+      break;
     case "1":
       changeGun(guns[0]);
       break;
@@ -422,7 +431,17 @@ addEventListener("mousemove", (e) => {
 
 addEventListener("mousedown", () => {
   if (gamePaused) return;
-  currentGun.startFiring(player);
+
+  if (defenseBlockSetup) {
+    if (blockInd < 8) {
+      blocks[blockInd].position.x = mouse.x - 70;
+      blocks[blockInd].position.y = mouse.y;
+      blocks[blockInd].isDeployed = true;
+      blockInd++;
+    } else {
+      defenseBlockSetup = false;
+    }
+  } else if(!preparationPhase) currentGun.startFiring(player);
 });
 
 addEventListener("mouseup", () => {
@@ -518,10 +537,6 @@ document.querySelectorAll(".powerUp").forEach((btn, i) => {
 window.onload = () => {
   pauseScr.style.display = "none";
   powerUpScr.style.display = "none";
-  cannonLeft.startFiring();
-  setTimeout(() => {
-    cannonRight.startFiring();
-  }, 10000);
-  // PUmsg.style.display = "none";
+  inventoryScr.style.display = "none";
   startGame();
 };
