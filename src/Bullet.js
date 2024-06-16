@@ -48,6 +48,7 @@ class Bullet {
 
       if (bulletCollision({ bul: this, obj: collisionBlock })) {
         collisionBlock.health -= this.damage;
+        console.log('rem health '+collisionBlock.health);
         if (collisionBlock.health < 0) this.collisionBlocks.splice(i, 1);
         if (this.isCannon) playSound("cannonHit", 0.2);
         return true;
@@ -64,7 +65,6 @@ class Bullet {
         if (zombie.health <= 0) {
           this.zombies.splice(i, 1);
           zombieCount--;
-          console.log('zombie count: '+zombieCount);
         }
         if(zombieCount<2)HordeSoundOff();
         this.player.score += this.damage;

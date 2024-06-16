@@ -112,8 +112,6 @@ function spawnZombies(interval) {
 
   zombieCount++;
   totalZombies++;
-  console.log("zombie count: " + zombieCount);
-  console.log("total zombie count: " + totalZombies);
   if (zombieCount > 0) HordeSoundOn();
   if (totalZombies % 10 === 0) {
     setTimeout(() => {

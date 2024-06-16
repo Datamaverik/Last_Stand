@@ -16,7 +16,6 @@ class Gun {
     this.ammo = ammo;
     this.mag = mag;
     this.magLimit = mag;
-    this.roundsFired = 0;
     this.gunrate = gunrate;
     this.isFiring = false;
     this.fireInterval = null;
@@ -97,7 +96,6 @@ class Gun {
       soundClone.play();
       this.addBullet(bullet);
       this.mag--;
-      this.roundsFired++;
       //  updating meters and texts
       Bmeter.value = this.mag / 100;
       ammo.textContent = `${this.mag}/${this.ammo}`;
@@ -146,10 +144,10 @@ class Gun {
   }
 
   reload() {
-    // console.log("Rounds fired: " + this.roundsFired);
     if (this.isReloading || this.isFiring) return; // Check if already reloading
     this.isReloading = true; // Set reloading flag
     ammo.textContent = `Reloading....`;
+    //  setting color of the indicator
     if (this.ammo > 0) {
       color = "white";
       ammo.style.color = color;
@@ -157,21 +155,16 @@ class Gun {
       color = "red";
       ammo.style.color = color;
     }
+    const reqBullets = this.magLimit-this.mag;
 
     setTimeout(() => {
-      if (this.ammo >= this.roundsFired) {
-        if (this.ammo + this.mag <= this.magLimit) {
-          this.mag += this.ammo;
-          this.ammo = 0;
-        } else {
-          this.mag += this.roundsFired;
-          this.ammo -= this.roundsFired;
-        }
+      if (this.ammo >= reqBullets) {
+        this.mag += reqBullets;
+        this.ammo -= reqBullets;
       } else {
         this.mag += this.ammo;
         this.ammo = 0;
       }
-      this.roundsFired = 0;
       Bmeter.value = this.mag / 100;
       ammo.textContent = `${this.mag}/${this.ammo}`;
       this.isReloading = false; // Reset reloading flag

@@ -1,5 +1,5 @@
 class Player {
-  constructor({ collisionBlocks, zombies = [] }) {
+  constructor({ collisionBlocks, zombies = [], boundaries }) {
     this.position = {
       x: canvas.width / 2,
       y: 200,
@@ -11,6 +11,7 @@ class Player {
     this.width = 40;
     this.height = 90;
     this.collisionBlocks = collisionBlocks;
+    this.boundaries = boundaries;
     this.jumpStrength = 13;
     this.gravity = 0.5;
     this.zombies = zombies;
@@ -104,6 +105,23 @@ class Player {
         }
       }
     }
+    //  horizontal collision with boundaries;
+    for (let i = 0; i < this.boundaries.length; i++) {
+      const boundary = this.boundaries[i];
+
+      if (collision({ obj1: this, obj2: boundary })) {
+        if (this.velocity.x > 0) {
+          this.velocity.x = 0;
+          this.position.x = boundary.position.x - 0.1 - this.width;
+          break;
+        }
+        if (this.velocity.x < 0) {
+          this.velocity.x = 0;
+          this.position.x = boundary.position.x + boundary.width + 0.1;
+          break;
+        }
+      }
+    }
     //  horizontal collision with zombies;
     for (let i = 0; i < this.zombies.length; i++) {
       const zombie = this.zombies[i];
@@ -149,6 +167,24 @@ class Player {
           this.velocity.y = 0;
           this.position.y =
             collisionBlock.position.y + collisionBlock.height + 0.1;
+          break;
+        }
+      }
+    }
+    //  vertical collision with boundaries
+    for (let i = 0; i < this.boundaries.length; i++) {
+      const boundary = this.boundaries[i];
+
+      if (collision({ obj1: this, obj2: boundary })) {
+        if (this.velocity.y > 0) {
+          this.velocity.y = 0;
+          this.position.y = boundary.position.y - this.height - 0.1;
+          this.grounded = true;
+          break;
+        }
+        if (this.velocity.y < 0) {
+          this.velocity.y = 0;
+          this.position.y = boundary.position.y + boundary.height + 0.1;
           break;
         }
       }
@@ -207,7 +243,7 @@ class Zombie extends Player {
     damage,
     color,
   }) {
-    super({ collisionBlocks, zombies });
+    super({ collisionBlocks, zombies, boundaries });
 
     this.position = position;
     this.velocity = velocity;
@@ -241,8 +277,6 @@ class Zombie extends Player {
         if (player instanceof Environment) {
           cannonLeft.ammo -= 6;
           cannonRight.ammo -= 6;
-          console.log("left cannon ammo: " + cannonLeft.ammo);
-          console.log("right cannon ammo: " + cannonRight.ammo);
         }
         return true;
       }

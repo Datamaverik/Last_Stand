@@ -5,6 +5,7 @@ const gravity = 0.5;
 const player = new Player({
   collisionBlocks: blocks,
   zombies,
+  boundaries,
 });
 // const zombie = new Zombie({
 //   position: {x:10,y:100},
@@ -265,7 +266,10 @@ function animate() {
     if (gun.bullets.length > 0) gun.shoot();
   });
   for (let i = 0; i < blocks.length; i++) {
-    if (blocks[i].isDeployed) blocks[i].draw();
+    if (blocks[i].isDeployed) blocks[i].update();
+  }
+  for (let i = 0; i < boundaries.length; i++) {
+    boundaries[i].draw();
   }
 
   //    player movements
@@ -290,8 +294,7 @@ function animate() {
   }
 
   //  adding fire effect if jetpack is active
-    updateParticles();
-  
+  updateParticles();
 
   //  drawing defense block ghost
   if (defenseBlockSetup) {
@@ -441,7 +444,7 @@ addEventListener("mousedown", () => {
     } else {
       defenseBlockSetup = false;
     }
-  } else if(!preparationPhase) currentGun.startFiring(player);
+  } else if (!preparationPhase) currentGun.startFiring(player);
 });
 
 addEventListener("mouseup", () => {
@@ -473,9 +476,7 @@ document.querySelectorAll(".powerUp").forEach((btn, i) => {
         player.score -= 1250;
         guns.forEach((gun) => {
           if (gun.name === currentGun.name) {
-            console.log(gun.ammo);
             gun.ammo += gun.magLimit;
-            console.log(gun.magLimit);
             return;
           }
         });
