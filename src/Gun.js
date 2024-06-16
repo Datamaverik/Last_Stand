@@ -155,7 +155,7 @@ class Gun {
       color = "red";
       ammo.style.color = color;
     }
-    const reqBullets = this.magLimit-this.mag;
+    const reqBullets = this.magLimit - this.mag;
 
     setTimeout(() => {
       if (this.ammo >= reqBullets) {
@@ -295,4 +295,17 @@ class Cannon extends Gun {
     c.fillRect(0, -this.height / 2, this.width, this.height);
     c.restore();
   }
+}
+
+function startCannonFire(interval = 10000) {
+  cannonLeft.startFiring();
+  cannonInterval = setTimeout(() => {
+    cannonRight.startFiring();
+  }, interval);
+}
+
+function stopCannonFire() {
+  clearInterval(cannonInterval);
+  cannonLeft.stopFiring();
+  cannonRight.stopFiring();
 }

@@ -1,5 +1,5 @@
 class Player {
-  constructor({ collisionBlocks, zombies = [], boundaries }) {
+  constructor({ collisionBlocks, zombies = [], boundaries, mines }) {
     this.position = {
       x: canvas.width / 2,
       y: 200,
@@ -12,6 +12,7 @@ class Player {
     this.height = 90;
     this.collisionBlocks = collisionBlocks;
     this.boundaries = boundaries;
+    this.mines = mines;
     this.jumpStrength = 13;
     this.gravity = 0.5;
     this.zombies = zombies;
@@ -119,6 +120,39 @@ class Player {
           this.velocity.x = 0;
           this.position.x = boundary.position.x + boundary.width + 0.1;
           break;
+        }
+      }
+    }
+    //  horizontal collision with mines;
+    for (let i = 0; i < this.mines.length; i++) {
+      const mine = this.mines[i];
+
+      if (
+        this.position.x + this.width / 2 <=
+          mine.position.x + 2.5 + mine.width / 2 &&
+        this.position.x + this.width / 2 >=
+          mine.position.x - 2.5 + mine.width / 2 &&
+        this instanceof Zombie
+      ) {
+        mine.explode();
+      }
+    }
+    //  horizontal collision with damageBox;
+    for (let i = 0; i < this.mines.length; i++) {
+      const damageBox = this.mines[i].damageBox;
+
+      if (
+        collision({ obj1: this, obj2: damageBox }) &&
+        this instanceof Zombie
+      ) {
+        if (this.mines[i].isBlasting) {
+          this.health -= 1.2;
+          if (this.health <= 0) {
+            const ind = this.zombies.indexOf(this);
+            this.zombies.splice(ind, 1);
+            zombieCount--;
+            return;
+          }
         }
       }
     }
@@ -243,7 +277,7 @@ class Zombie extends Player {
     damage,
     color,
   }) {
-    super({ collisionBlocks, zombies, boundaries });
+    super({ collisionBlocks, zombies, boundaries, mines });
 
     this.position = position;
     this.velocity = velocity;

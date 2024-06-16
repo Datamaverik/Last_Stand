@@ -141,8 +141,9 @@ blocks.forEach((b) => {
 
 defenseBlockBtn.onclick = () => {
   defenseBlockSetup = true;
+  mineSetup = false;
   inventoryScr.close();
   inventoryScr.style.display = "none";
+  inventoryOpen = false;
 };
 
-function setBlocks() {}

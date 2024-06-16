@@ -6,6 +6,7 @@ const player = new Player({
   collisionBlocks: blocks,
   zombies,
   boundaries,
+  mines,
 });
 // const zombie = new Zombie({
 //   position: {x:10,y:100},
@@ -33,7 +34,7 @@ const M4A1 = new Gun({
   damage: 14,
   mag: 30,
   name: "M4A1",
-  velocity: 8,
+  velocity: 16,
   player: player,
   reloadTime: 3.1,
   spread: 2 * (Math.PI / 180),
@@ -45,7 +46,7 @@ const AWM = new Gun({
   damage: 180,
   mag: 5,
   name: "AWM",
-  velocity: 11,
+  velocity: 22,
   player: player,
   reloadTime: 3.6,
   spread: 0.5 * (Math.PI / 180),
@@ -57,7 +58,7 @@ const AKM = new Gun({
   damage: 17.5,
   mag: 30,
   name: "AKM",
-  velocity: 7,
+  velocity: 14,
   player: player,
   reloadTime: 2.35,
   spread: 1.5 * (Math.PI / 180),
@@ -69,7 +70,7 @@ const DEagle = new Gun({
   damage: 40.25,
   mag: 9,
   name: "DEagle",
-  velocity: 5,
+  velocity: 10,
   player: player,
   reloadTime: 2.3,
   spread: 2.5 * (Math.PI / 180),
@@ -81,7 +82,7 @@ const UZI = new Gun({
   damage: 7.5,
   mag: 33,
   name: "UZI",
-  velocity: 6,
+  velocity: 12,
   player: player,
   reloadTime: 1.6,
   spread: 2.5 * (Math.PI / 180),
@@ -232,13 +233,13 @@ function animate() {
   if (gamePaused) return;
   requestAnimationFrame(animate);
   c.clearRect(0, 0, canvas.width, canvas.height);
+
+  //  drawing zombies, player and cannons
   player.update();
   for (let i = 0; i < zombies.length; i++) {
     zombies[i].update();
     zombies[i].detectPlayerCollision(player);
   }
-  // zombie.update();
-  // zombie.detectPlayerCollision(player);
   player.zombies = zombies;
   platform.draw();
   theta = calculateAngle(player);
@@ -247,6 +248,8 @@ function animate() {
   cannonLeft.shoot();
   cannonRight.draw();
   cannonRight.shoot();
+
+  //  drawing trajectory of bullets
   const trajectoryPoints = bulletTrack.calculateTrajectoryPoints(
     {
       x:
@@ -262,6 +265,7 @@ function animate() {
   );
   Bullet.drawTrajectory(trajectoryPoints);
 
+  //  shooting guns and drawing defense blocks and boundaries
   guns.forEach((gun) => {
     if (gun.bullets.length > 0) gun.shoot();
   });
@@ -270,6 +274,9 @@ function animate() {
   }
   for (let i = 0; i < boundaries.length; i++) {
     boundaries[i].draw();
+  }
+  for (let i = 0; i < mines.length; i++) {
+    if (mines[i].isDeployed) mines[i].update();
   }
 
   //    player movements
@@ -298,9 +305,13 @@ function animate() {
 
   //  drawing defense block ghost
   if (defenseBlockSetup) {
-    // c.fillStyle = `hsla(${213}, ${20}%, ${9}%, ${0.373})`;
     c.strokeStyle = "white";
     c.strokeRect(mouse.x - 70, mouse.y, 70, 70);
+  }
+  //  drawing mine ghost
+  if (mineSetup) {
+    c.strokeStyle = "white";
+    c.strokeRect(mouse.x - 40, mouse.y, 40, 10);
   }
 }
 
@@ -332,6 +343,7 @@ addEventListener("keydown", ({ key }) => {
       player.toggleJetpack();
       break;
     case "s":
+      if (preparationPhase) return;
       if (gamePaused) {
         usePowerUp();
         //  reset the cannons
@@ -349,12 +361,20 @@ addEventListener("keydown", ({ key }) => {
       break;
     case "Escape":
       if (gamePaused) {
-        //  reset the cannons
-        cannonLeft.startFiring();
-        cannonInterval = setTimeout(() => {
-          cannonRight.startFiring();
-        }, 10000);
-
+        if (preparationPhase)
+          updatePUmsg(
+            `Preparation time: ${
+              preparationTime - timeSpent - 1
+            }s. Place defense blocks, traps and mines strategically`,
+            "green"
+          );
+        else {
+          //  reset the cannons
+          cannonLeft.startFiring();
+          cannonInterval = setTimeout(() => {
+            cannonRight.startFiring();
+          }, 10000);
+        }
         playSound("pause");
         gamePaused = false;
         if (zombieCount > 0) HordeSoundOn();
@@ -398,6 +418,8 @@ addEventListener("keyup", ({ key }) => {
       break;
     case "i":
       if (!inventoryOpen && preparationPhase) {
+        defenseBlockSetup = false;
+        mineSetup = false;
         inventoryOpen = true;
         inventoryScr.showModal();
         inventoryScr.style.display = "flex";
@@ -444,6 +466,13 @@ addEventListener("mousedown", () => {
     } else {
       defenseBlockSetup = false;
     }
+  } else if (mineSetup) {
+    if (mineInd < 3) {
+      mines[mineInd].position.x = mouse.x - 40;
+      mines[mineInd].position.y = mouse.y;
+      mines[mineInd].isDeployed = true;
+      mineInd++;
+    } else mineSetup = false;
   } else if (!preparationPhase) currentGun.startFiring(player);
 });
 
@@ -539,5 +568,11 @@ window.onload = () => {
   pauseScr.style.display = "none";
   powerUpScr.style.display = "none";
   inventoryScr.style.display = "none";
-  startGame();
+  decreaseTimer();
+  updatePUmsg(
+    `Preparation time: ${
+      preparationTime - timeSpent
+    }s. Place defense blocks, traps and mines strategically`,
+    "green"
+  );
 };

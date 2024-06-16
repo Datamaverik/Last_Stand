@@ -12,23 +12,27 @@ let collisionDetected,
   lastKey,
   gamePaused = false,
   defenseBlockSetup = false,
+  mineSetup = false,
   inventoryOpen = false,
   preparationPhase = true,
+  timeSpent = 0,
+  preparationTime = 30,
   time,
+  spawnInterval = 3500,
   time2,
   fuel = 100,
   zombieInterval = null,
   cannonInterval = null,
   color = "white",
   currentGun,
-  speedPUTimeout = null,
   damagePUTimeout = null,
   PUmsgTimeout = null,
   duration = 240,
   speedDur = 0,
   blockInd = 0,
+  mineInd = 0,
   damageDur = 0,
-  Pvelocity = 3.8,
+  Pvelocity = 2.8,
   zombieCount = 0,
   totalZombies = 0,
   zombies = [],
@@ -52,6 +56,7 @@ const Hmeter = document.getElementById("Hmeter"),
   score = document.getElementById("score"),
   gunIcon = document.getElementById("gunIcon"),
   defenseBlockBtn = document.getElementById("defenseBlock"),
+  mineBtn = document.getElementById("mineBtn"),
   PUmsg = document.getElementById("PUmsg");
 
 const mouse = {
@@ -121,10 +126,11 @@ function spawnZombies(interval) {
         velocity: { x: 0, y: 0 },
         collisionBlocks: blocks,
         zombies,
-        speed: 0.45,
+        health: 100,
+        speed: 0.75,
         height: 75,
         width: 35,
-        damage: 10,
+        damage: 15,
         attackFreq: 2000,
         color: "green",
       });
@@ -139,11 +145,11 @@ function spawnZombies(interval) {
         collisionBlocks: blocks,
         health: 300,
         zombies,
-        speed: 0.15,
+        speed: 0.2,
         height: 120,
         width: 60,
-        damage: 30,
-        attackFreq: 6000,
+        damage: 60,
+        attackFreq: 6500,
         color: "gray",
       });
       zombies.push(zombie);
@@ -156,9 +162,10 @@ function spawnZombies(interval) {
         velocity: { x: 0, y: 0 },
         collisionBlocks: blocks,
         zombies,
-        speed: 0.3,
+        health: 70,
+        speed: 0.5,
         damage: 10,
-        attackFreq: 3500,
+        attackFreq: 3000,
         color: "red",
       });
       zombies.push(zombie);
@@ -174,8 +181,7 @@ function formatTimer(seconds) {
 }
 
 function GameOver(text) {
-  cannonLeft.stopFiring();
-  cannonRight.stopFiring();
+  stopCannonFire();
   msg.textContent = text;
   gamePaused = true;
   pauseScr.style.display = "flex";
@@ -187,7 +193,28 @@ function GameOver(text) {
 function decreaseTimer() {
   if (duration > 0 && !gamePaused) {
     time = setTimeout(decreaseTimer, 1000);
+    if (timeSpent === 190) {
+      spawnInterval = 1500;
+      clearInterval(zombieInterval);
+      zombieInterval = setInterval(() => {
+        spawnZombies(spawnInterval);
+      }, spawnInterval);
+      updatePUmsg(
+        "DANGER!! Big Zombie horde incoming. Cannon ammo reloaded",
+        "red"
+      );
+      cannonLeft.ammo += 18;
+      cannonRight.ammo += 18;
+      cannonLeft.gunrate = 13;
+      cannonRight.gunrate = 13;
+      stopCannonFire();
+      startCannonFire(3000);
+    }
     duration--;
+    timeSpent = 240 - duration;
+    if (timeSpent === preparationTime) {
+      startGame();
+    }
     if (speedDur > 0) {
       speedDur--;
       timer2.classList.remove("timer-hide");
@@ -213,28 +240,20 @@ function decreaseTimer() {
 }
 
 function startGame() {
-  setTimeout(() => {
-    zombieInterval = setInterval(() => {
-      spawnZombies(3500);
-    }, 3500);
-    updatePUmsg("Preparation time ends!! ZOMBIES INCOMING!!!", "red");
-    preparationPhase = false;
-    defenseBlockSetup = false;
-    cannonLeft.startFiring();
-    cannonInterval = setTimeout(() => {
-      cannonRight.startFiring();
-    }, 10000);
-    powerUpScr.close();
-    powerUpScr.style.display = "none";
-  }, 30000);
+  console.log("Game started");
+  zombieInterval = setInterval(() => {
+    spawnZombies(spawnInterval);
+  }, spawnInterval);
+  updatePUmsg("Preparation time ends!! ZOMBIES INCOMING!!!", "red");
+  preparationPhase = false;
+  defenseBlockSetup = false;
+  mineSetup = false;
+  startCannonFire();
+  powerUpScr.close();
+  powerUpScr.style.display = "none";
 
   gamePaused = false;
-  preparationPhase = true;
-  decreaseTimer();
-  updatePUmsg(
-    "Preparation time: 30s. Place defense blocks, traps and mines strategically",
-    "green"
-  );
+  preparationPhase = false;
 }
 
 restartBtn.onclick = () => {
