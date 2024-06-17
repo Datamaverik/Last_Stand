@@ -171,6 +171,7 @@ class Mine {
   }
 
   explode() {
+    sounds['MineExplosion'].play();
     this.isBlasting = true;
     this.blastStartTime = Date.now();
   }
@@ -208,6 +209,124 @@ class Mine {
   }
 }
 
+class SpikeTrap {
+  constructor({
+    position,
+    damage,
+    spikeHeight = 20,
+    interval = 2000,
+    stabDuration = 500,
+  }) {
+    this.position = position;
+    this.damage = damage;
+    this.width = 40;
+    this.height = 10; // Height of the base
+    this.spikeHeight = spikeHeight; // Height of the spikes when fully extended
+    this.spikeExtension = 0; // Current extension of the spikes
+    this.isStabbing = false;
+    this.interval = interval; // Time between stabs
+    this.stabDuration = stabDuration; // Duration of the stab
+    this.lastStabTime = Date.now();
+    this.isDeployed = false;
+    this.isGrounded = false;
+    this.velocity = { x: 0, y: 0 };
+    this.gravity = 0.5;
+    this.numSpikes = 3;
+  }
+
+  draw() {
+    c.fillStyle = "yellow";
+    c.fillRect(this.position.x, this.position.y, this.width, this.height); // Draw the base
+
+    // Draw the spikes as triangles
+    c.fillStyle = "grey";
+    for (let i = 0; i < this.numSpikes; i++) {
+      const spikeWidth = this.width / this.numSpikes;
+      const x = this.position.x + i * spikeWidth;
+      const y = this.position.y - this.spikeExtension;
+      c.beginPath();
+      c.moveTo(x, this.position.y);
+      c.lineTo(x + spikeWidth / 2, y);
+      c.lineTo(x + spikeWidth, this.position.y);
+      c.closePath();
+      c.fill();
+    }
+    // Draw the spikes
+    // c.fillStyle = "grey";
+    // c.fillRect(
+    //   this.position.x,
+    //   this.position.y - this.spikeExtension,
+    //   this.width,
+    //   this.spikeExtension
+    // );
+  }
+
+  update() {
+    this.draw();
+    this.animateSpikes();
+    this.checkForZombies();
+    if (!this.isGrounded) {
+      this.position.y += this.velocity.y;
+      this.velocity.y += this.gravity;
+      this.checkForCollision();
+    }
+  }
+
+  animateSpikes() {
+    const now = Date.now();
+    if (!this.isStabbing && now - this.lastStabTime > this.interval) {
+      this.isStabbing = true;
+      this.lastStabTime = now;
+    }
+
+    if (this.isStabbing) {
+      sounds['SpikeTrap'].play();
+      const elapsed = now - this.lastStabTime;
+      if (elapsed < this.stabDuration / 2) {
+        // Extend the spikes
+        this.spikeExtension =
+          (elapsed / (this.stabDuration / 2)) * this.spikeHeight;
+      } else if (elapsed < this.stabDuration) {
+        // Retract the spikes
+        this.spikeExtension =
+          ((this.stabDuration - elapsed) / (this.stabDuration / 2)) *
+          this.spikeHeight;
+      } else {
+        // Reset
+        this.spikeExtension = 0;
+        this.isStabbing = false;
+      }
+    }
+  }
+
+  checkForZombies() {
+    if (this.spikeExtension > 0) {
+      // Only check for collision if the spikes are extended
+      zombies.forEach((zombie, ind) => {
+        if (collision({ obj1: this, obj2: zombie })) {
+          zombie.health -= this.damage;
+          if (zombie.health <= 0) {
+            zombies.splice(ind, 1);
+          }
+        }
+      });
+    }
+  }
+
+  checkForCollision() {
+    for (const boundary of boundaries) {
+      if (collision({ obj1: this, obj2: boundary })) {
+        if (this.velocity.y > 0) {
+          this.velocity.y = 0;
+          this.position.y = boundary.position.y - this.height - 0.1;
+          this.isGrounded = true;
+          break;
+        }
+      }
+    }
+  }
+}
+
 const mines = [];
 
 mines[0] = new Mine({
@@ -226,6 +345,33 @@ mines[2] = new Mine({
 mineBtn.onclick = () => {
   mineSetup = true;
   defenseBlockSetup = false;
+  trapSetup = false;
+  inventoryScr.close();
+  inventoryScr.style.display = "none";
+  inventoryOpen = false;
+};
+
+const traps = [];
+
+traps[0] = new SpikeTrap({
+  position: { x: -100, y: -100 },
+  damage: 1,
+  spikeHeight: 100,
+  interval: 10000,
+  stabDuration: 500,
+});
+traps[1] = new SpikeTrap({
+  position: { x: -100, y: -100 },
+  damage: 1,
+  spikeHeight: 100,
+  interval: 10000,
+  stabDuration: 500,
+});
+
+trapBtn.onclick = () => {
+  mineSetup = false;
+  defenseBlockSetup = false;
+  trapSetup = true;
   inventoryScr.close();
   inventoryScr.style.display = "none";
   inventoryOpen = false;

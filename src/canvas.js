@@ -278,6 +278,9 @@ function animate() {
   for (let i = 0; i < mines.length; i++) {
     if (mines[i].isDeployed) mines[i].update();
   }
+   for (let i = 0; i < traps.length; i++) {
+     if (traps[i].isDeployed) traps[i].update();
+   }
 
   //    player movements
   if (keys.right.pressed) {
@@ -310,6 +313,11 @@ function animate() {
   }
   //  drawing mine ghost
   if (mineSetup) {
+    c.strokeStyle = "white";
+    c.strokeRect(mouse.x - 40, mouse.y, 40, 10);
+  }
+  //  drawing trap ghost
+  if (trapSetup) {
     c.strokeStyle = "white";
     c.strokeRect(mouse.x - 40, mouse.y, 40, 10);
   }
@@ -473,6 +481,13 @@ addEventListener("mousedown", () => {
       mines[mineInd].isDeployed = true;
       mineInd++;
     } else mineSetup = false;
+  } else if (trapSetup) {
+    if (trapInd < 2) {
+      traps[trapInd].position.x = mouse.x - 40;
+      traps[trapInd].position.y = mouse.y;
+      traps[trapInd].isDeployed = true;
+      trapInd++;
+    } else trapSetup = false;
   } else if (!preparationPhase) currentGun.startFiring(player);
 });
 

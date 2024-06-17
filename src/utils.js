@@ -13,6 +13,7 @@ let collisionDetected,
   gamePaused = false,
   defenseBlockSetup = false,
   mineSetup = false,
+  trapSetup = false,
   inventoryOpen = false,
   preparationPhase = true,
   timeSpent = 0,
@@ -31,6 +32,7 @@ let collisionDetected,
   speedDur = 0,
   blockInd = 0,
   mineInd = 0,
+  trapInd = 0,
   damageDur = 0,
   Pvelocity = 2.8,
   zombieCount = 0,
@@ -57,6 +59,7 @@ const Hmeter = document.getElementById("Hmeter"),
   gunIcon = document.getElementById("gunIcon"),
   defenseBlockBtn = document.getElementById("defenseBlock"),
   mineBtn = document.getElementById("mineBtn"),
+  trapBtn = document.getElementById("trapBtn"),
   PUmsg = document.getElementById("PUmsg");
 
 const mouse = {
@@ -248,6 +251,7 @@ function startGame() {
   preparationPhase = false;
   defenseBlockSetup = false;
   mineSetup = false;
+  trapSetup = false;
   startCannonFire();
   powerUpScr.close();
   powerUpScr.style.display = "none";
@@ -323,11 +327,13 @@ const sounds = {
   Jump2: new Audio("./sounds/Jump2.mp3"),
   Hurt: new Audio("./sounds/Hurt.mp3"),
   Hurt2: new Audio("./sounds/Hurt2.mp3"),
+  SpikeTrap: new Audio("./sounds/MineTrap.mp3"),
   pause: new Audio("./sounds/pause.wav"),
   shop: new Audio("./sounds/shop.wav"),
   cannon: new Audio("./sounds/cannon.wav"),
   cannonHit: new Audio("./sounds/cannonHit.wav"),
   empty: new Audio("./sounds/empty.wav"),
+  MineExplosion: new Audio("./sounds/MineExplosion.wav"),
 };
 
 const Zsounds = [
