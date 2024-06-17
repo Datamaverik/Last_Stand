@@ -37,11 +37,14 @@ class Gun {
   // Method to add a new bullet to the array
   addBullet(bullet) {
     this.bullets.push(bullet);
+    sorroundings.push(bullet);
   }
 
   // Method to remove a bullet from the array
   removeBullet(index) {
     const removedBullet = this.bullets.splice(index, 1)[0];
+    const ind = sorroundings.indexOf(removedBullet);
+    sorroundings.splice(ind,1);
   }
 
   // Method to update and draw bullets
@@ -207,8 +210,7 @@ class Cannon extends Gun {
       spread,
       color,
     });
-    this.x = x;
-    this.y = y;
+    this.position = {x:x,y:y};
     this.width = width;
     this.height = height;
     this.direction = direction;
@@ -224,8 +226,8 @@ class Cannon extends Gun {
     if (this.ammo > 0) {
       const cannonBall1 = new Bullet({
         position: {
-          x: this.x + this.width * Math.cos(this.alpha) - this.offset.x,
-          y: this.y + this.width * Math.sin(this.alpha),
+          x: this.position.x + this.width * Math.cos(this.alpha) - this.offset.x,
+          y: this.position.y + this.width * Math.sin(this.alpha),
         },
         velocity: this.velocity,
         theta: this.alpha,
@@ -238,8 +240,8 @@ class Cannon extends Gun {
       });
       const cannonBall2 = new Bullet({
         position: {
-          x: this.x + this.width * Math.cos(this.alpha) - this.offset.x,
-          y: this.y + this.width * Math.sin(this.alpha),
+          x: this.position.x + this.width * Math.cos(this.alpha) - this.offset.x,
+          y: this.position.y + this.width * Math.sin(this.alpha),
         },
         velocity: this.velocity,
         theta: this.alpha + 0.05,
@@ -252,8 +254,8 @@ class Cannon extends Gun {
       });
       const cannonBall3 = new Bullet({
         position: {
-          x: this.x + this.width * Math.cos(this.alpha) - 20,
-          y: this.y + this.width * Math.sin(this.alpha),
+          x: this.position.x + this.width * Math.cos(this.alpha) - 20,
+          y: this.position.y + this.width * Math.sin(this.alpha),
         },
         velocity: this.velocity,
         theta: this.alpha - 0.05,
@@ -289,7 +291,7 @@ class Cannon extends Gun {
 
   draw() {
     c.save();
-    c.translate(this.x, this.y);
+    c.translate(this.position.x, this.position.y);
     c.rotate(this.angle);
     c.fillStyle = this.color;
     c.fillRect(0, -this.height / 2, this.width, this.height);

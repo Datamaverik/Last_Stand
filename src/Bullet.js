@@ -62,7 +62,8 @@ class Bullet {
       if (bulletCollision({ bul: this, obj: zombie })) {
         if (zombie.health > 0) zombie.health -= this.damage;
         if (zombie.health <= 0) {
-          this.zombies.splice(i, 1);
+          const ind = sorroundings.indexOf(this.zombies.splice(i, 1));
+          sorroundings.splice(ind, 1);
           zombieCount--;
         }
         if (zombieCount < 2) HordeSoundOff();
@@ -124,6 +125,7 @@ class Mine {
     position,
     range = { width: 100, height: 150 },
     blastDuration = 400,
+    sound = sounds["MineExplosion"].cloneNode(),
   }) {
     this.position = position;
     this.damageBox = {
@@ -141,6 +143,7 @@ class Mine {
     this.width = 40;
     this.height = 10;
     this.isDeployed = false;
+    this.sound = sound;
   }
 
   draw() {
@@ -171,7 +174,8 @@ class Mine {
   }
 
   explode() {
-    sounds['MineExplosion'].play();
+    // sounds["MineExplosion"].play();
+    this.sound.play();
     this.isBlasting = true;
     this.blastStartTime = Date.now();
   }
@@ -216,6 +220,7 @@ class SpikeTrap {
     spikeHeight = 20,
     interval = 2000,
     stabDuration = 500,
+    sound = sounds["SpikeTrap"].cloneNode(),
   }) {
     this.position = position;
     this.damage = damage;
@@ -232,6 +237,7 @@ class SpikeTrap {
     this.velocity = { x: 0, y: 0 };
     this.gravity = 0.5;
     this.numSpikes = 3;
+    this.sound = sound;
   }
 
   draw() {
@@ -251,14 +257,6 @@ class SpikeTrap {
       c.closePath();
       c.fill();
     }
-    // Draw the spikes
-    // c.fillStyle = "grey";
-    // c.fillRect(
-    //   this.position.x,
-    //   this.position.y - this.spikeExtension,
-    //   this.width,
-    //   this.spikeExtension
-    // );
   }
 
   update() {
@@ -280,7 +278,8 @@ class SpikeTrap {
     }
 
     if (this.isStabbing) {
-      sounds['SpikeTrap'].play();
+      // sounds["SpikeTrap"].play();
+      this.sound.play();
       const elapsed = now - this.lastStabTime;
       if (elapsed < this.stabDuration / 2) {
         // Extend the spikes
@@ -306,7 +305,8 @@ class SpikeTrap {
         if (collision({ obj1: this, obj2: zombie })) {
           zombie.health -= this.damage;
           if (zombie.health <= 0) {
-            zombies.splice(ind, 1);
+            const ind2 = sorroundings.indexOf(zombies.splice(ind, 1));
+            sorroundings.splice(ind2, 1);
           }
         }
       });
@@ -343,6 +343,7 @@ mines[2] = new Mine({
 });
 
 mineBtn.onclick = () => {
+  playSound("click");
   mineSetup = true;
   defenseBlockSetup = false;
   trapSetup = false;
@@ -369,6 +370,7 @@ traps[1] = new SpikeTrap({
 });
 
 trapBtn.onclick = () => {
+  playSound("click");
   mineSetup = false;
   defenseBlockSetup = false;
   trapSetup = true;

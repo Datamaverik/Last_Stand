@@ -147,6 +147,15 @@ const bulletTrack = new Bullet({
 currentGun = UZI;
 changeGun(UZI);
 
+sorroundings = [
+  ...traps,
+  ...mines,
+  cannonLeft,
+  cannonRight,
+  ...blocks,
+  platform,
+];
+
 function changeGun(gun) {
   if (currentGun.isFiring || currentGun.isReloading) return;
 
@@ -278,18 +287,36 @@ function animate() {
   for (let i = 0; i < mines.length; i++) {
     if (mines[i].isDeployed) mines[i].update();
   }
-   for (let i = 0; i < traps.length; i++) {
-     if (traps[i].isDeployed) traps[i].update();
-   }
+  for (let i = 0; i < traps.length; i++) {
+    if (traps[i].isDeployed) traps[i].update();
+  }
 
   //    player movements
-  if (keys.right.pressed) {
+  if (keys.right.pressed && player.position.x <= 737) {
     if (lastKey === "right") player.velocity.x = Pvelocity;
     else if (lastKey === "left") player.velocity.x = -Pvelocity;
-  } else if (keys.left.pressed) {
+  } else if (keys.left.pressed && player.position.x >= 487) {
     if (lastKey === "left") player.velocity.x = -Pvelocity;
     else if (lastKey === "right") player.velocity.x = Pvelocity;
-  } else player.velocity.x = 0;
+  } else {
+    player.velocity.x = 0;
+    if (keys.right.pressed)
+      sorroundings.forEach((sorrounding) => {
+        if (sorrounding) {
+          if (sorrounding instanceof Boundary)
+            sorrounding.position.x += Pvelocity;
+          else sorrounding.position.x -= Pvelocity;
+        }
+      });
+    else if (keys.left.pressed)
+      sorroundings.forEach((sorrounding) => {
+        if (sorrounding) {
+          if (sorrounding instanceof Boundary)
+            sorrounding.position.x -= Pvelocity;
+          else sorrounding.position.x += Pvelocity;
+        }
+      });
+  }
 
   //    platform collision detection
   if (
@@ -353,6 +380,7 @@ addEventListener("keydown", ({ key }) => {
     case "s":
       if (preparationPhase) return;
       if (gamePaused) {
+        sounds["shop"].play();
         usePowerUp();
         //  reset the cannons
         cannonLeft.startFiring();
@@ -361,6 +389,7 @@ addEventListener("keydown", ({ key }) => {
         }, 10000);
       } else {
         gamePaused = true;
+        sounds["shop"].play();
         cannonLeft.stopFiring();
         cannonRight.stopFiring();
         powerUpScr.showModal();
@@ -427,12 +456,15 @@ addEventListener("keyup", ({ key }) => {
     case "i":
       if (!inventoryOpen && preparationPhase) {
         defenseBlockSetup = false;
+        playSound("Inventory");
         mineSetup = false;
         inventoryOpen = true;
+        trapSetup = false;
         inventoryScr.showModal();
         inventoryScr.style.display = "flex";
       } else {
         inventoryOpen = false;
+        playSound("Inventory");
         inventoryScr.close();
         inventoryScr.style.display = "none";
       }
@@ -467,6 +499,7 @@ addEventListener("mousedown", () => {
 
   if (defenseBlockSetup) {
     if (blockInd < 8) {
+      playSound("DefenseBlock");
       blocks[blockInd].position.x = mouse.x - 70;
       blocks[blockInd].position.y = mouse.y;
       blocks[blockInd].isDeployed = true;
@@ -476,6 +509,7 @@ addEventListener("mousedown", () => {
     }
   } else if (mineSetup) {
     if (mineInd < 3) {
+      playSound("LandMine");
       mines[mineInd].position.x = mouse.x - 40;
       mines[mineInd].position.y = mouse.y;
       mines[mineInd].isDeployed = true;
@@ -500,6 +534,7 @@ document.querySelectorAll(".powerUp").forEach((btn, i) => {
     PUdesc.textContent = btn.getAttribute("data-tooltip");
   });
   btn.addEventListener("click", (e) => {
+    sounds["click"].play();
     switch (i) {
       case 0:
         if (player.score < 1100) {

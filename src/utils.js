@@ -28,7 +28,7 @@ let collisionDetected,
   currentGun,
   damagePUTimeout = null,
   PUmsgTimeout = null,
-  duration = 240,
+  duration = 260,
   speedDur = 0,
   blockInd = 0,
   mineInd = 0,
@@ -38,7 +38,8 @@ let collisionDetected,
   zombieCount = 0,
   totalZombies = 0,
   zombies = [],
-  particles = [];
+  particles = [],
+  sorroundings = [];
 
 const Hmeter = document.getElementById("Hmeter"),
   Bmeter = document.getElementById("Bmeter"),
@@ -138,6 +139,7 @@ function spawnZombies(interval) {
         color: "green",
       });
       zombies.push(zombie);
+      sorroundings.push(zombie);
     }, interval);
   } else if (totalZombies % 15 === 0) {
     setTimeout(() => {
@@ -156,6 +158,7 @@ function spawnZombies(interval) {
         color: "gray",
       });
       zombies.push(zombie);
+      sorroundings.push(zombie);
     }, interval);
   } else {
     setTimeout(() => {
@@ -172,6 +175,7 @@ function spawnZombies(interval) {
         color: "red",
       });
       zombies.push(zombie);
+      sorroundings.push(zombie);
     }, interval);
   }
   if (zombieCount < 2) HordeSoundOff();
@@ -214,7 +218,7 @@ function decreaseTimer() {
       startCannonFire(3000);
     }
     duration--;
-    timeSpent = 240 - duration;
+    timeSpent = 260 - duration;
     if (timeSpent === preparationTime) {
       startGame();
     }
@@ -327,12 +331,16 @@ const sounds = {
   Jump2: new Audio("./sounds/Jump2.mp3"),
   Hurt: new Audio("./sounds/Hurt.mp3"),
   Hurt2: new Audio("./sounds/Hurt2.mp3"),
+  LandMine: new Audio("./sounds/LandMine.mp3"),
+  DefenseBlock: new Audio("./sounds/DefenseBlock.mp3"),
   SpikeTrap: new Audio("./sounds/MineTrap.mp3"),
   pause: new Audio("./sounds/pause.wav"),
   shop: new Audio("./sounds/shop.wav"),
   cannon: new Audio("./sounds/cannon.wav"),
   cannonHit: new Audio("./sounds/cannonHit.wav"),
   empty: new Audio("./sounds/empty.wav"),
+  Inventory: new Audio("./sounds/Inventory.wav"),
+  click: new Audio("./sounds/click.wav"),
   MineExplosion: new Audio("./sounds/MineExplosion.wav"),
 };
 

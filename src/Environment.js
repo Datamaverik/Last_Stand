@@ -111,39 +111,43 @@ blocks[7] = new Environment({
 });
 
 //  left boundary
-boundaries[0] = new Boundary({
-  position: { x: -20, y: 0 },
+boundaries[2] = new Boundary({
+  position: { x: -2000, y: 0 },
   size: { width: 20, height: canvas.height - 1 },
   health: 1000000,
 });
 //  right boundary
-boundaries[1] = new Boundary({
-  position: { x: canvas.width, y: 0 },
+boundaries[3] = new Boundary({
+  position: { x: canvas.width + 2000, y: 0 },
   size: { width: 20, height: canvas.height - 1 },
   health: 1000000,
 });
 //  Top cover
-boundaries[2] = new Boundary({
+boundaries[0] = new Boundary({
   position: { x: -20, y: -20 },
   size: { width: canvas.width + 40, height: 20 },
   health: 1000000,
 });
 //  base
-boundaries[3] = new Boundary({
-  position: { x: -20, y: 556 },
-  size: { width: canvas.width + 40, height: 20 },
+boundaries[1] = new Boundary({
+  position: { x: -2000, y: 556 },
+  size: { width: canvas.width + 4000, height: 20 },
   health: 1000000,
 });
+
+sorroundings.push(boundaries[2]);
+sorroundings.push(boundaries[3]);
 
 blocks.forEach((b) => {
   b.isDeployed = false;
 });
 
 defenseBlockBtn.onclick = () => {
+  playSound("click");
   defenseBlockSetup = true;
   mineSetup = false;
+  trapSetup = false;
   inventoryScr.close();
   inventoryScr.style.display = "none";
   inventoryOpen = false;
 };
-

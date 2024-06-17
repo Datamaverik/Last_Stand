@@ -134,6 +134,12 @@ class Player {
           mine.position.x - 2.5 + mine.width / 2 &&
         this instanceof Zombie
       ) {
+        // console.log(
+        //   `[${mine.position.x + 2.5 + mine.width / 2}, ${
+        //     mine.position.x - 2.5 + mine.width / 2
+        //   }]`
+        // );
+        // console.log(this.position.x + this.width / 2);
         mine.explode();
       }
     }
@@ -149,7 +155,8 @@ class Player {
           this.health -= 1.2;
           if (this.health <= 0) {
             const ind = this.zombies.indexOf(this);
-            this.zombies.splice(ind, 1);
+            const ind2 = sorroundings.indexOf(zombies.splice(ind, 1));
+            sorroundings.splice(ind2, 1);
             zombieCount--;
             return;
           }
