@@ -8,7 +8,42 @@ const player = new Player({
   boundaries,
   mines,
   platforms,
+  sprite: {
+    IdleR: {
+      imageSrc: "./assets/SoldierRight/Idle.png",
+      framesMax: 7,
+      id: "Idle",
+    },
+    RunR: {
+      imageSrc: "./assets/SoldierRight/Run.png",
+      framesMax: 6,
+      id: "RunR",
+    },
+    ShotR: {
+      imageSrc: "./assets/SoldierRight/Shot.png",
+      framesMax: 4,
+      id: "ShotR",
+    },
+    Hurt: {
+      imageSrc: "./assets/SoldierRight/Hurt.png",
+      framesMax: 4,
+      id: "Hurt",
+    },
+    Dead: {
+      imageSrc: "./assets/SoldierRight/Dead.png",
+      framesMax: 5,
+      id: "Dead",
+    },
+    Recharge: {
+      imageSrc: "./assets/SoldierRight/Recharge.png",
+      framesMax: 8,
+      id: "Recharge",
+    },
+  },
 });
+player.loadSprite();
+player.switchSprite("IdleR");
+
 // const zombie = new Zombie({
 //   position: {x:10,y:100},
 //   velocity: { x: 0, y: 0 },
@@ -244,6 +279,7 @@ function updateParticles() {
 sorroundings.push(boundaries[2]);
 sorroundings.push(boundaries[3]);
 
+// preparationPhase = false;
 function animate() {
   if (gamePaused) return;
   requestAnimationFrame(animate);
@@ -255,13 +291,6 @@ function animate() {
   layer3.draw();
   layer4.draw();
   layer5.draw();
-  // if (keys.right.pressed) {
-  //   if (lastKey === "right" && scrollOffset<5000) layer2.update(1);
-  //   else if (lastKey === "left" && scrollOffset>-5000) layer2.update(-1);
-  // } else if (keys.left.pressed) {
-  //   if (lastKey === "left" && scrollOffset>-5000) layer2.update(-1);
-  //   else if (lastKey === "right" && scrollOffset<5000) layer2.update(1);
-  // }
 
   //  drawing zombies, player and cannons
   player.update();
@@ -317,15 +346,29 @@ function animate() {
   // console.log(
   //   "platform position " + (platform.position.x + platform.width / 2)
   // );
+  // console.log(sorroundings);
   //    player movements
   if (keys.right.pressed && player.position.x <= 862) {
-    if (lastKey === "right") player.velocity.x = Pvelocity;
-    else if (lastKey === "left") player.velocity.x = -Pvelocity;
+    if (lastKey === "right") {
+      changeSprite();
+      player.velocity.x = Pvelocity;
+      console.log("moving right");
+    } else if (lastKey === "left") {
+      player.velocity.x = -Pvelocity;
+      console.log("moving left");
+    }
   } else if (keys.left.pressed && player.position.x >= 362) {
-    if (lastKey === "left") player.velocity.x = -Pvelocity;
-    else if (lastKey === "right") player.velocity.x = Pvelocity;
+    if (lastKey === "left") {
+      player.velocity.x = -Pvelocity;
+      console.log("moving left");
+    } else if (lastKey === "right") {
+      changeSprite();
+      player.velocity.x = Pvelocity;
+      console.log("moving right");
+    }
   } else {
     player.velocity.x = 0;
+    changeSprite();
     if (keys.right.pressed)
       sorroundings.forEach((sorrounding) => {
         if (sorrounding) {
@@ -337,6 +380,7 @@ function animate() {
             layer4.update(1);
             layer5.update(1);
             sorrounding.position.x -= Pvelocity;
+            console.log("moving surrounding to the left!");
           }
         }
       });
@@ -351,12 +395,13 @@ function animate() {
             layer4.update(-1);
             layer5.update(-1);
             sorrounding.position.x += Pvelocity;
+            console.log("moving surrounding to the right!");
           }
         }
       });
   }
 
-  //    platform collision detection
+  //    platform collision left
   if (
     player.position.y + player.height <= platform.position.y &&
     player.position.y + player.height + player.velocity.y >=
@@ -480,16 +525,20 @@ addEventListener("keyup", ({ key }) => {
   switch (key) {
     case "d":
       keys.right.pressed = false;
-      if (!keys.left.pressed) stopRunSound();
-      else lastKey = "left";
+      if (!keys.left.pressed) {
+        stopRunSound();
+      } else lastKey = "left";
       break;
     case "a":
       keys.left.pressed = false;
-      if (!keys.right.pressed) stopRunSound();
-      else lastKey = "right";
+      if (!keys.right.pressed) {
+        stopRunSound();
+        //  apply IdleL here;
+      } else lastKey = "right";
       break;
     case "r":
       currentGun.reload();
+      player.switchSprite("Recharge");
       break;
     case "i":
       if (!inventoryOpen && preparationPhase) {
@@ -560,11 +609,18 @@ addEventListener("mousedown", () => {
       traps[trapInd].isDeployed = true;
       trapInd++;
     } else trapSetup = false;
-  } else if (!preparationPhase) currentGun.startFiring(player);
+  } else if (!preparationPhase) {
+    currentGun.startFiring(player);
+    if (lastKey === "right") player.switchSprite("ShotR");
+    //  apply shotL
+  }
 });
 
 addEventListener("mouseup", () => {
   currentGun.stopFiring();
+  if (keys.right.pressed) player.switchSprite("RunR");
+  else player.switchSprite("IdleR");
+  //  apply IdleL
 });
 
 document.querySelectorAll(".powerUp").forEach((btn, i) => {

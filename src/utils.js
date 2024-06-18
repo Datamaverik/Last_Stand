@@ -9,7 +9,7 @@ const max = 60,
   size = 20;
 let collisionDetected,
   theta,
-  lastKey,
+  lastKey = "right",
   gamePaused = false,
   defenseBlockSetup = false,
   mineSetup = false,
@@ -19,7 +19,7 @@ let collisionDetected,
   timeSpent = 0,
   preparationTime = 30,
   time,
-  spawnInterval = 3500,
+  spawnInterval = 6000,
   time2,
   fuel = 100,
   zombieInterval = null,
@@ -111,8 +111,8 @@ function calculateAngle() {
 
 // Function to generate random positions within canvas boundaries
 function getRandomPosition() {
-  const x = randomIntFromRange(1, 5) % 2 == 0 ? 10 : 1140;
-  const y = 100;
+  const x = randomIntFromRange(1, 5) % 2 == 0 ? -500 : 1740;
+  const y = 300;
   return { x, y };
 }
 
@@ -123,7 +123,7 @@ function spawnZombies(interval) {
   zombieCount++;
   totalZombies++;
   if (zombieCount > 0) HordeSoundOn();
-  if (totalZombies % 10 === 0) {
+  if (totalZombies % 8 === 0) {
     setTimeout(() => {
       const position = getRandomPosition();
       const zombie = new JumpingZombie({
@@ -131,33 +131,122 @@ function spawnZombies(interval) {
         velocity: { x: 0, y: 0 },
         collisionBlocks: blocks,
         zombies,
-        health: 100,
-        speed: 0.75,
+        health: 300,
+        speed: 0.65,
         height: 75,
         width: 35,
         damage: 15,
         attackFreq: 2000,
         color: "green",
+        sprite: {
+          IdleRZ: {
+            imageSrc: "./assets/ZombieWomanRight/Idle.png",
+            framesMax: 5,
+            id: "IdleZ",
+          },
+          WalkR: {
+            imageSrc: "./assets/ZombieWomanRight/Walk.png",
+            framesMax: 7,
+            id: "WalkR",
+          },
+          Attack_1: {
+            imageSrc: "./assets/ZombieWomanRight/Attack_1.png",
+            framesMax: 4,
+            id: "Attack_1",
+          },
+          Attack_2: {
+            imageSrc: "./assets/ZombieWomanRight/Attack_2.png",
+            framesMax: 4,
+            id: "Attack_2",
+          },
+          Attack_3: {
+            imageSrc: "./assets/ZombieWomanRight/Attack_3.png",
+            framesMax: 4,
+            id: "Attack_3",
+          },
+          HurtZ: {
+            imageSrc: "./assets/ZombieWomanRight/Hurt.png",
+            framesMax: 3,
+            id: "HurtZ",
+          },
+          DeadZ: {
+            imageSrc: "./assets/ZombieWomanRight/Dead.png",
+            framesMax: 5,
+            id: "DeadZ",
+          },
+          Jump: {
+            imageSrc: "./assets/ZombieWomanRight/Jump.png",
+            framesMax: 6,
+            id: "Jump",
+          },
+        },
+        framesHold: 15,
+        offset: { x: 65, y: 76 },
+        scale: { width: 4.2, height: 2 },
       });
+      zombie.loadSprite();
+      zombie.switchSprite("IdleRZ");
       zombies.push(zombie);
       sorroundings.push(zombie);
     }, interval);
-  } else if (totalZombies % 15 === 0) {
+  } else if (totalZombies % 11 === 0) {
     setTimeout(() => {
       const position = getRandomPosition();
       const zombie = new Zombie({
         position: position,
         velocity: { x: 0, y: 0 },
         collisionBlocks: blocks,
-        health: 300,
+        health: 900,
         zombies,
-        speed: 0.2,
+        speed: 0.35,
         height: 120,
         width: 60,
         damage: 60,
         attackFreq: 6500,
         color: "gray",
+        sprite: {
+          IdleRZ: {
+            imageSrc: "./assets/WildZombieRight/Idle.png",
+            framesMax: 9,
+            id: "IdleZ",
+          },
+          WalkR: {
+            imageSrc: "./assets/WildZombieRight/Walk.png",
+            framesMax: 10,
+            id: "WalkR",
+          },
+          Attack_1: {
+            imageSrc: "./assets/WildZombieRight/Attack_1.png",
+            framesMax: 4,
+            id: "Attack_1",
+          },
+          Attack_2: {
+            imageSrc: "./assets/WildZombieRight/Attack_2.png",
+            framesMax: 4,
+            id: "Attack_2",
+          },
+          Attack_3: {
+            imageSrc: "./assets/WildZombieRight/Attack_3.png",
+            framesMax: 4,
+            id: "Attack_3",
+          },
+          HurtZ: {
+            imageSrc: "./assets/WildZombieRight/Hurt.png",
+            framesMax: 5,
+            id: "HurtZ",
+          },
+          DeadZ: {
+            imageSrc: "./assets/WildZombieRight/Dead.png",
+            framesMax: 5,
+            id: "DeadZ",
+          },
+        },
+        framesHold: 15,
+        offset: { x: 105, y: 122 },
+        scale: { width: 4.2, height: 2 },
       });
+      zombie.loadSprite();
+      zombie.switchSprite("IdleRZ");
       zombies.push(zombie);
       sorroundings.push(zombie);
     }, interval);
@@ -169,12 +258,54 @@ function spawnZombies(interval) {
         velocity: { x: 0, y: 0 },
         collisionBlocks: blocks,
         zombies,
-        health: 70,
-        speed: 0.5,
+        health: 210,
+        speed: 0.42,
         damage: 10,
         attackFreq: 3000,
         color: "red",
+        framesHold: 13,
+        offset: { x: 65, y: 76 },
+        scale: { width: 4.2, height: 2 },
+        sprite: {
+          IdleRZ: {
+            imageSrc: "./assets/ZombieManRight/Idle.png",
+            framesMax: 8,
+            id: "IdleZ",
+          },
+          WalkR: {
+            imageSrc: "./assets/ZombieManRight/Walk.png",
+            framesMax: 8,
+            id: "WalkR",
+          },
+          Attack_1: {
+            imageSrc: "./assets/ZombieManRight/Attack_1.png",
+            framesMax: 5,
+            id: "Attack_1",
+          },
+          Attack_2: {
+            imageSrc: "./assets/ZombieManRight/Attack_2.png",
+            framesMax: 4,
+            id: "Attack_2",
+          },
+          Attack_3: {
+            imageSrc: "./assets/ZombieManRight/Attack_3.png",
+            framesMax: 5,
+            id: "Attack_3",
+          },
+          HurtZ: {
+            imageSrc: "./assets/ZombieManRight/Hurt.png",
+            framesMax: 3,
+            id: "HurtZ",
+          },
+          DeadZ: {
+            imageSrc: "./assets/ZombieManRight/Dead.png",
+            framesMax: 5,
+            id: "DeadZ",
+          },
+        },
       });
+      zombie.loadSprite();
+      zombie.switchSprite("IdleRZ");
       zombies.push(zombie);
       sorroundings.push(zombie);
     }, interval);
@@ -201,8 +332,8 @@ function GameOver(text) {
 function decreaseTimer() {
   if (duration > 0 && !gamePaused) {
     time = setTimeout(decreaseTimer, 1000);
-    if (timeSpent === 190) {
-      spawnInterval = 1500;
+    if (timeSpent === 180) {
+      spawnInterval = 4000;
       clearInterval(zombieInterval);
       zombieInterval = setInterval(() => {
         spawnZombies(spawnInterval);
@@ -213,8 +344,8 @@ function decreaseTimer() {
       );
       cannonLeft.ammo += 18;
       cannonRight.ammo += 18;
-      cannonLeft.gunrate = 13;
-      cannonRight.gunrate = 13;
+      cannonLeft.gunrate = 11;
+      cannonRight.gunrate = 11;
       stopCannonFire();
       startCannonFire(3000);
     }
@@ -406,4 +537,17 @@ function HordeSoundOn() {
 function HordeSoundOff() {
   Zombie_Horde.pause();
   // Zombie_Horde.currentTime = 0;
+}
+
+function changeSprite() {
+  if (keys.right.pressed && !currentGun.isReloading && !currentGun.isFiring)
+    player.switchSprite("RunR");
+  else if (!currentGun.isReloading && !currentGun.isFiring) {
+    player.switchSprite("IdleR");
+    // console.log('switched to idle');
+  }
+
+  // if (keys.left.pressed)
+  //   player.switchSprite("RunL");
+  //  else player.switchSprite("IdleL");
 }

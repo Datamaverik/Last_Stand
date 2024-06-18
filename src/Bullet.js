@@ -71,11 +71,18 @@ class Bullet {
 
       if (bulletCollision({ bul: this, obj: zombie })) {
         if (zombie.health > 0) zombie.health -= this.damage;
+
         if (zombie.health <= 0) {
-          const ind = sorroundings.indexOf(this.zombies.splice(i, 1));
-          sorroundings.splice(ind, 1);
-          zombieCount--;
-        }
+          if (!zombie.dead) zombie.switchSprite("DeadZ");
+          zombie.dead = true;
+          zombie.velocity.x = 0;
+          setTimeout(() => {
+            const ind = sorroundings.indexOf(this.zombies.splice(i, 1));
+            sorroundings.splice(ind, 1);
+            zombieCount--;
+          }, 500);
+        } else zombie.switchSprite("HurtZ");
+
         if (zombieCount < 2) HordeSoundOff();
         this.player.score += this.damage;
         score.textContent = `Score:💰${this.player.score}`;
@@ -194,7 +201,6 @@ class Mine {
   }
 
   explode() {
-    // sounds["MineExplosion"].play();
     this.sound.play();
     this.isBlasting = true;
     this.blastStartTime = Date.now();
@@ -334,13 +340,19 @@ class SpikeTrap {
   checkForZombies() {
     if (this.spikeExtension > 0) {
       // Only check for collision if the spikes are extended
-      zombies.forEach((zombie, ind) => {
+      zombies.forEach((zombie, i) => {
         if (collision({ obj1: this, obj2: zombie })) {
           zombie.health -= this.damage;
           if (zombie.health <= 0) {
-            const ind2 = sorroundings.indexOf(zombies.splice(ind, 1));
-            sorroundings.splice(ind2, 1);
-          }
+            if (!zombie.dead) zombie.switchSprite("DeadZ");
+            zombie.dead = true;
+            zombie.velocity.x = 0;
+            setTimeout(() => {
+              const ind = sorroundings.indexOf(zombies.splice(i, 1));
+              sorroundings.splice(ind, 1);
+              zombieCount--;
+            }, 500);
+          } else zombie.switchSprite("HurtZ");
         }
       });
     }

@@ -172,6 +172,9 @@ class Gun {
       Bmeter.value = this.mag / 100;
       ammo.textContent = `${this.mag}/${this.ammo}`;
       this.isReloading = false; // Reset reloading flag
+
+      //  check if running and set sprite
+      changeSprite();
     }, this.reloadTime * 1000);
   }
 }

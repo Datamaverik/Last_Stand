@@ -1,5 +1,14 @@
 class Player {
-  constructor({ collisionBlocks, zombies = [], boundaries, mines,platforms }) {
+  constructor({
+    collisionBlocks,
+    zombies = [],
+    boundaries,
+    mines,
+    platforms,
+    sprite,
+    framesHold = 10,
+    scale = 2,
+  }) {
     this.position = {
       x: canvas.width / 2,
       y: 200,
@@ -27,16 +36,58 @@ class Player {
     this.fuelUsage = 0.05;
     this.refuelRate = 0.002;
     this.jetpackGravity = 0.01;
+    this.scale = scale;
+    this.dead = false;
+    this.isHurting = false;
+
+    this.sprite = sprite;
+    this.currentFrame = 0;
+    this.frameElapsed = 0;
+    this.framesHold = framesHold;
+    this.framesMax;
+    this.image;
+  }
+
+  loadSprite() {
+    for (const spr in this.sprite) {
+      this.sprite[spr].image = new Image();
+      this.sprite[spr].image.src = this.sprite[spr].imageSrc;
+      this.sprite[spr].image.id = this.sprite[spr].id;
+    }
   }
 
   draw() {
-    c.fillStyle = "pink";
-    c.fillRect(this.position.x, this.position.y, this.width, this.height);
+    // c.fillStyle = "pink";
+    // c.fillRect(this.position.x, this.position.y, this.width, this.height);
+
+    // drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+    c.drawImage(
+      this.image.image,
+      (this.image.image.width / this.image.framesMax) * this.currentFrame,
+      0,
+      this.image.image.width / this.image.framesMax,
+      this.image.image.height,
+      this.position.x - 50,
+      this.position.y - 116,
+      this.width * 4.2,
+      this.height * 2.3
+    );
+  }
+
+  animateFrame() {
+    this.frameElapsed++;
+
+    if (this.frameElapsed % this.framesHold === 0) {
+      if (this.currentFrame < this.framesMax - 1) {
+        this.currentFrame++;
+      } else {
+        this.currentFrame = 0;
+      }
+    }
   }
 
   update() {
     //  Jetpack logic
-    //  jumpSt = 13
     if (this instanceof Player && !(this instanceof Zombie)) {
       if (this.jetpackActive && fuel > 0) {
         fuel -= this.fuelUsage;
@@ -55,6 +106,7 @@ class Player {
     }
 
     this.draw();
+    this.animateFrame();
 
     this.position.x += this.velocity.x;
     //  order matters
@@ -92,6 +144,7 @@ class Player {
         //  Call the jump method of jumping zombie
         if (this instanceof JumpingZombie) {
           this.jump();
+          this.switchSprite("Jump");
         }
 
         if (this.velocity.x > 0) {
@@ -148,13 +201,30 @@ class Player {
       ) {
         if (this.mines[i].isBlasting) {
           this.health -= 1.2;
+          //  apply damage
           if (this.health <= 0) {
-            const ind = this.zombies.indexOf(this);
-            const ind2 = sorroundings.indexOf(zombies.splice(ind, 1));
-            sorroundings.splice(ind2, 1);
-            zombieCount--;
+            if (!this.dead) this.switchSprite("DeadZ");
+            this.dead = true;
+            this.velocity.x = 0;
+            setTimeout(() => {
+              const ind = this.zombies.indexOf(this);
+              const ind2 = sorroundings.indexOf(zombies.splice(ind, 1));
+              sorroundings.splice(ind2, 1);
+              zombieCount--;
+            }, 500);
             return;
-          }
+          } else this.switchSprite("HurtZ");
+          
+          // if (this.health <= 0) {
+          //   if (!this.dead) this.switchSprite("DeadZ");
+          //   this.dead = true;
+          //   this.velocity.x = 0;
+          //   setTimeout(() => {
+          //     const ind = sorroundings.indexOf(this.zombies.splice(i, 1));
+          //     sorroundings.splice(ind, 1);
+          //     zombieCount--;
+          //   }, 500);
+          // } else this.switchSprite("HurtZ");
         }
       }
     }
@@ -167,6 +237,7 @@ class Player {
         //  Call the jump method of jumping zombie
         if (this instanceof JumpingZombie) {
           this.jump();
+          this.switchSprite("Jump");
         }
         if (this.velocity.x > 0) {
           this.velocity.x = 0;
@@ -280,6 +351,72 @@ class Player {
       }
     }
   }
+
+  switchSprite(sprite) {
+    if (this.image === this.sprite.Dead.image) {
+      if (this.currentFrame === this.sprite.Dead.framesMax - 1)
+        this.dead = true;
+      return;
+    }
+    // //Overriding all ohter animations
+    // if (
+    //   (this.image === this.sprite.Attack1.image ||
+    //     this.image === this.sprite.Attack2.image ||
+    //     this.image === this.sprite.Take_Hit.image) &&
+    //   this.currentFrame < this.framesMax - 1
+    // )
+    //   return;
+    if (
+      this.image === this.sprite.Hurt &&
+      this.currentFrame < this.framesMax - 1
+    )
+      return;
+
+    switch (sprite) {
+      case "IdleR":
+        if (this.image !== this.sprite.IdleR) {
+          this.image = this.sprite.IdleR;
+          this.framesMax = this.sprite.IdleR.framesMax;
+          this.currentFrame = 0;
+        }
+        break;
+      case "RunR":
+        if (this.image !== this.sprite.RunR) {
+          this.image = this.sprite.RunR;
+          this.framesMax = this.sprite.RunR.framesMax;
+          this.currentFrame = 0;
+        }
+        break;
+      case "ShotR":
+        if (this.image !== this.sprite.ShotR) {
+          this.image = this.sprite.ShotR;
+          this.framesMax = this.sprite.ShotR.framesMax;
+          this.currentFrame = 0;
+        }
+        break;
+      case "Hurt":
+        if (this.image !== this.sprite.Hurt) {
+          this.image = this.sprite.Hurt;
+          this.framesMax = this.sprite.Hurt.framesMax;
+          this.currentFrame = 0;
+        }
+        break;
+      case "Dead":
+        if (this.image !== this.sprite.Dead) {
+          this.image = this.sprite.Dead;
+          this.framesMax = this.sprite.Dead.framesMax;
+          this.currentFrame = 0;
+        }
+        break;
+      case "Recharge":
+        if (this.image !== this.sprite.Recharge) {
+          this.image = this.sprite.Recharge;
+          this.framesMax = this.sprite.Recharge.framesMax;
+          this.currentFrame = 0;
+        }
+        break;
+    }
+  }
 }
 
 class Zombie extends Player {
@@ -295,8 +432,18 @@ class Zombie extends Player {
     attackFreq = 2000,
     damage,
     color,
+    sprite,
+    offset,
+    scale,
+    framesHold,
   }) {
-    super({ collisionBlocks, zombies, boundaries, mines,platforms });
+    super({
+      collisionBlocks,
+      zombies,
+      boundaries,
+      mines,
+      platforms,
+    });
 
     this.position = position;
     this.velocity = velocity;
@@ -309,11 +456,37 @@ class Zombie extends Player {
     this.attackFreq = attackFreq;
     this.speed = speed;
     this.color = color;
+    this.deat = false;
+
+    this.sprite = sprite;
+
+    this.currentFrame = 0;
+    this.frameElapsed = 0;
+    this.framesHold = framesHold;
+    this.framesMax;
+    this.image;
+    this.offset = offset;
+    this.scale = scale;
   }
 
   draw() {
-    c.fillStyle = this.color;
-    c.fillRect(this.position.x, this.position.y, this.width, this.height);
+    // c.fillStyle = this.color;
+    // c.fillRect(this.position.x, this.position.y, this.width, this.height);
+
+    // this.image = this.sprite.WalkR;
+
+    // this.framesMax = this.image.framesMax;
+    c.drawImage(
+      this.image.image,
+      (this.image.image.width / this.framesMax) * this.currentFrame,
+      0,
+      this.image.image.width / this.framesMax,
+      this.image.image.height,
+      this.position.x - this.offset.x,
+      this.position.y - this.offset.y,
+      this.width * this.scale.width,
+      this.height * this.scale.height
+    );
   }
 
   attack(player, attackRate) {
@@ -322,10 +495,15 @@ class Zombie extends Player {
       if (player instanceof Player) {
         if (randomIntFromRange(1, 10) % 2 === 0) playSound("Hurt", 0.5);
         else playSound("Hurt2", 0.5);
+        player.switchSprite("Hurt");
       }
       playZAttack(0.5);
+      const ind = randomIntFromRange(1, 3);
+      this.switchSprite(`Attack_${ind}`);
       player.health -= this.damage + 0.25 * zombies.length;
-      if (player instanceof Player) Hmeter.value = player.health / 100;
+      if (player instanceof Player) {
+        Hmeter.value = player.health / 100;
+      }
       if (player.health <= 0) {
         if (player instanceof Environment) {
           cannonLeft.ammo -= 6;
@@ -342,6 +520,7 @@ class Zombie extends Player {
     if (collision({ obj1: this, obj2: player })) {
       if (this.attack(player, this.attackFreq)) {
         GameOver("YOU LOSE!!! You were ran over by zombies");
+        player.switchSprite("dead");
       }
       if (this.velocity.y > 0.5) {
         // Zombie falls on top of the player
@@ -354,13 +533,91 @@ class Zombie extends Player {
         this.velocity.x = 0;
         this.position.x = player.position.x + player.width + 0.1;
       }
-    } else {
+    } else if (!this.dead) {
       const factor = player.position.x - this.position.x;
+      this.switchSprite("WalkR");
       if (factor > 0) {
         this.velocity.x = this.speed;
       } else if (factor < 0) {
         this.velocity.x = -this.speed;
       }
+    }
+  }
+
+  switchSprite(sprite) {
+    // if (
+    //   this.image === this.sprite.DeadZ &&
+    //   this.currentFrame < this.framesMax - 1
+    // ) {
+    //   return;
+    // }
+    if (
+      (this.image === this.sprite.HurtZ ||
+        this.image === this.sprite.Attack_1 ||
+        this.image === this.sprite.Attack_2 ||
+        this.image === this.sprite.Jump ||
+        this.image === this.sprite.Attack_3) &&
+      this.currentFrame < this.framesMax - 1
+    )
+      return;
+
+    switch (sprite) {
+      case "IdleRZ":
+        if (this.image !== this.sprite.IdleRZ) {
+          this.image = this.sprite.IdleRZ;
+          this.framesMax = this.sprite.IdleRZ.framesMax;
+          this.currentFrame = 0;
+        }
+        break;
+      case "WalkR":
+        if (this.image !== this.sprite.WalkR) {
+          this.image = this.sprite.WalkR;
+          this.framesMax = this.sprite.WalkR.framesMax;
+          this.currentFrame = 0;
+        }
+        break;
+      case "Attack_1":
+        if (this.image !== this.sprite.Attack_1) {
+          this.image = this.sprite.Attack_1;
+          this.framesMax = this.sprite.Attack_1.framesMax;
+          this.currentFrame = 0;
+        }
+        break;
+      case "Attack_2":
+        if (this.image !== this.sprite.Attack_2) {
+          this.image = this.sprite.Attack_2;
+          this.framesMax = this.sprite.Attack_2.framesMax;
+          this.currentFrame = 0;
+        }
+        break;
+      case "Attack_3":
+        if (this.image !== this.sprite.Attack_3) {
+          this.image = this.sprite.Attack_3;
+          this.framesMax = this.sprite.Attack_3.framesMax;
+          this.currentFrame = 0;
+        }
+        break;
+      case "HurtZ":
+        if (this.image !== this.sprite.HurtZ) {
+          this.image = this.sprite.HurtZ;
+          this.framesMax = this.sprite.HurtZ.framesMax;
+          this.currentFrame = 0;
+        }
+        break;
+      case "DeadZ":
+        if (this.image !== this.sprite.DeadZ) {
+          this.image = this.sprite.DeadZ;
+          this.framesMax = this.sprite.DeadZ.framesMax;
+          this.currentFrame = 0;
+        }
+        break;
+      case "Jump":
+        if (this.image !== this.sprite.Jump) {
+          this.image = this.sprite.Jump;
+          this.framesMax = this.sprite.Jump.framesMax;
+          this.currentFrame = 0;
+        }
+        break;
     }
   }
 }
@@ -378,6 +635,10 @@ class JumpingZombie extends Zombie {
     jumpStrength = 15,
     damage,
     speed,
+    sprite,
+    framesHold,
+    offset,
+    scale,
   }) {
     super({
       position,
@@ -393,11 +654,42 @@ class JumpingZombie extends Zombie {
       damage,
     });
     this.jumpStrength = jumpStrength;
+
+    this.sprite = sprite;
+    for (const spr in this.sprite) {
+      sprite[spr].image = new Image();
+      sprite[spr].image.src = sprite[spr].imageSrc;
+      sprite[spr].image.id = sprite[spr].id;
+    }
+
+    this.currentFrame = 0;
+    this.frameElapsed = 0;
+    this.framesHold = framesHold;
+    this.framesMax;
+    this.image;
+    this.offset = offset;
+    this.scale = scale;
   }
 
   draw() {
-    c.fillStyle = "green";
-    c.fillRect(this.position.x, this.position.y, this.width, this.height);
+    // c.fillStyle = "green";
+    // c.fillRect(this.position.x, this.position.y, this.width, this.height);
+
+    // console.log(this.image);
+
+    // this.image = this.sprite.RunR;
+    // this.framesMax = this.image.framesMax;
+    c.drawImage(
+      this.image.image,
+      (this.image.image.width / this.framesMax) * this.currentFrame,
+      0,
+      this.image.image.width / this.framesMax,
+      this.image.image.height,
+      this.position.x - this.offset.x,
+      this.position.y - this.offset.y,
+      this.width * this.scale.width,
+      this.height * this.scale.height
+    );
   }
 
   jump() {

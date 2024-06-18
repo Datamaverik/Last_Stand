@@ -141,13 +141,13 @@ blocks[7] = new Environment({
 
 //  base
 boundaries[0] = new Boundary({
-  position: { x: -5, y: 556 },
-  size: { width: canvas.width + 10, height: 20 },
+  position: { x: -600, y: 556 },
+  size: { width: canvas.width + 1200, height: 20 },
   health: 1000000,
 });
 platforms[0] = new Platform({
-  position: { x: -5, y: 556 },
-  width: canvas.width + 10,
+  position: { x: -600, y: 556 },
+  width: canvas.width + 1200,
   height: 20,
 });
 platforms[1] = new Platform({
