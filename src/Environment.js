@@ -6,10 +6,11 @@ class Platform {
   }
 
   draw() {
-    c.fillStyle = "lightBlue";
+    c.fillStyle = "#292330";
     c.fillRect(this.position.x, this.position.y, this.width, this.height);
   }
 }
+const platforms = [];
 class Boundary {
   constructor({ position, size }) {
     this.position = position;
@@ -18,13 +19,13 @@ class Boundary {
   }
 
   draw() {
-    c.fillStyle = "lightBlue";
+    c.fillStyle = "#292330";
     c.fillRect(this.position.x, this.position.y, this.width, this.height);
   }
 }
 
 class Environment {
-  constructor({ position, size, health = 100 }) {
+  constructor({ position, size, health = 100, imgSrc = "./assets/box.png" }) {
     this.position = position;
     this.width = size.width;
     this.height = size.height;
@@ -33,10 +34,19 @@ class Environment {
     this.isGrounded = false;
     this.isDeployed = false;
     this.health = health;
+    this.img = new Image();
+    this.img.src = imgSrc;
   }
   draw() {
-    c.fillStyle = "lightBlue";
-    c.fillRect(this.position.x, this.position.y, this.width, this.height);
+    c.drawImage(
+      this.img,
+      this.position.x,
+      this.position.y,
+      this.width,
+      this.height
+    );
+    // c.fillStyle = "lightBlue";
+    // c.fillRect(this.position.x, this.position.y, this.width, this.height);
   }
   update() {
     this.draw();
@@ -110,33 +120,41 @@ blocks[7] = new Environment({
   size: { width: 70, height: 70 },
 });
 
-//  left boundary
-boundaries[2] = new Boundary({
-  position: { x: -2000, y: 0 },
-  size: { width: 20, height: canvas.height - 1 },
-  health: 1000000,
-});
-//  right boundary
-boundaries[3] = new Boundary({
-  position: { x: canvas.width + 2000, y: 0 },
-  size: { width: 20, height: canvas.height - 1 },
-  health: 1000000,
-});
-//  Top cover
-boundaries[0] = new Boundary({
-  position: { x: -20, y: -20 },
-  size: { width: canvas.width + 40, height: 20 },
-  health: 1000000,
-});
-//  base
-boundaries[1] = new Boundary({
-  position: { x: -2000, y: 556 },
-  size: { width: canvas.width + 4000, height: 20 },
-  health: 1000000,
-});
+// //  left boundary
+// boundaries[2] = new Boundary({
+//   position: { x: -5, y: 0 },
+//   size: { width: 20, height: canvas.height - 1 },
+//   health: 1000000,
+// });
+// //  right boundary
+// boundaries[3] = new Boundary({
+//   position: { x: canvas.width - 5, y: 0 },
+//   size: { width: 20, height: canvas.height - 1 },
+//   health: 1000000,
+// });
+// //  Top cover
+// boundaries[0] = new Boundary({
+//   position: { x: -5, y: -20 },
+//   size: { width: canvas.width + 10, height: 20 },
+//   health: 1000000,
+// });
 
-sorroundings.push(boundaries[2]);
-sorroundings.push(boundaries[3]);
+//  base
+boundaries[0] = new Boundary({
+  position: { x: -5, y: 556 },
+  size: { width: canvas.width + 10, height: 20 },
+  health: 1000000,
+});
+platforms[0] = new Platform({
+  position: { x: -5, y: 556 },
+  width: canvas.width + 10,
+  height: 20,
+});
+platforms[1] = new Platform({
+  position: { x: -5, y: -20 },
+  width: canvas.width,
+  height: 20,
+});
 
 blocks.forEach((b) => {
   b.isDeployed = false;
@@ -151,3 +169,59 @@ defenseBlockBtn.onclick = () => {
   inventoryScr.style.display = "none";
   inventoryOpen = false;
 };
+
+class Background {
+  constructor({ imgSrc, factor }) {
+    this.img = new Image();
+    this.img.src = imgSrc;
+    this.offset = { x: 4084, y: 0 };
+    this.factor = factor;
+  }
+
+  draw() {
+    // drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+    c.drawImage(
+      this.img,
+      this.offset.x,
+      this.offset.y,
+      canvas.width,
+      canvas.height,
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+  }
+
+  update(direction = 1) {
+    // this.offset.x += BGSpeed * this.velocityFactor * direction;
+    this.offset.x += Pvelocity * direction * this.factor;
+    if (this.offset.x >= 7147) {
+      this.offset.x = 0;
+    }
+    if (this.offset.x < 0) this.offset.x = 7147;
+    // this.draw();
+  }
+}
+
+const layer2 = new Background({
+  imgSrc: "./assets/Background/Layer2.png",
+  factor: 0.015,
+});
+const layer3 = new Background({
+  imgSrc: "./assets/Background/Layer3.png",
+  factor: 0.025,
+});
+const layer4 = new Background({
+  imgSrc: "./assets/Background/Layer4.png",
+  factor: 0.035,
+});
+const layer5 = new Background({
+  imgSrc: "./assets/Background/Layer5.png",
+  factor: 0.05,
+});
+const layer1 = new Background({
+  imgSrc: "./assets/Background/Layer1.png",
+  factor: 0.01,
+});
+

@@ -1,5 +1,5 @@
 class Player {
-  constructor({ collisionBlocks, zombies = [], boundaries, mines }) {
+  constructor({ collisionBlocks, zombies = [], boundaries, mines,platforms }) {
     this.position = {
       x: canvas.width / 2,
       y: 200,
@@ -13,6 +13,7 @@ class Player {
     this.collisionBlocks = collisionBlocks;
     this.boundaries = boundaries;
     this.mines = mines;
+    this.platforms = platforms;
     this.jumpStrength = 13;
     this.gravity = 0.5;
     this.zombies = zombies;
@@ -134,12 +135,6 @@ class Player {
           mine.position.x - 2.5 + mine.width / 2 &&
         this instanceof Zombie
       ) {
-        // console.log(
-        //   `[${mine.position.x + 2.5 + mine.width / 2}, ${
-        //     mine.position.x - 2.5 + mine.width / 2
-        //   }]`
-        // );
-        // console.log(this.position.x + this.width / 2);
         mine.explode();
       }
     }
@@ -213,19 +208,36 @@ class Player {
       }
     }
     //  vertical collision with boundaries
-    for (let i = 0; i < this.boundaries.length; i++) {
-      const boundary = this.boundaries[i];
+    // for (let i = 0; i < this.boundaries.length; i++) {
+    //   const boundary = this.boundaries[i];
 
-      if (collision({ obj1: this, obj2: boundary })) {
+    //   if (collision({ obj1: this, obj2: boundary })) {
+    //     if (this.velocity.y > 0) {
+    //       this.velocity.y = 0;
+    //       this.position.y = boundary.position.y - this.height - 0.1;
+    //       this.grounded = true;
+    //       break;
+    //     }
+    //     if (this.velocity.y < 0) {
+    //       this.velocity.y = 0;
+    //       this.position.y = boundary.position.y + boundary.height + 0.1;
+    //       break;
+    //     }
+    //   }
+    // }
+    for (let i = 0; i < this.platforms.length; i++) {
+      const platform = this.platforms[i];
+
+      if (collision({ obj1: this, obj2: platform })) {
         if (this.velocity.y > 0) {
           this.velocity.y = 0;
-          this.position.y = boundary.position.y - this.height - 0.1;
+          this.position.y = platform.position.y - this.height - 0.1;
           this.grounded = true;
           break;
         }
         if (this.velocity.y < 0) {
           this.velocity.y = 0;
-          this.position.y = boundary.position.y + boundary.height + 0.1;
+          this.position.y = platform.position.y + platform.height + 0.1;
           break;
         }
       }
@@ -284,7 +296,7 @@ class Zombie extends Player {
     damage,
     color,
   }) {
-    super({ collisionBlocks, zombies, boundaries, mines });
+    super({ collisionBlocks, zombies, boundaries, mines,platforms });
 
     this.position = position;
     this.velocity = velocity;

@@ -7,6 +7,7 @@ const player = new Player({
   zombies,
   boundaries,
   mines,
+  platforms,
 });
 // const zombie = new Zombie({
 //   position: {x:10,y:100},
@@ -112,6 +113,7 @@ const cannonLeft = new Cannon({
   alpha: -1.75,
   offset: { x: 20, y: 0 },
   color: "rgb(108, 120, 140)",
+  platforms,
 });
 const cannonRight = new Cannon({
   x: 733,
@@ -132,6 +134,7 @@ const cannonRight = new Cannon({
   angle: 3.42,
   offset: { x: 0, y: 0 },
   color: "rgb(108, 120, 140)",
+  platforms,
 });
 const bulletTrack = new Bullet({
   position: {
@@ -238,10 +241,27 @@ function updateParticles() {
   }
 }
 
+sorroundings.push(boundaries[2]);
+sorroundings.push(boundaries[3]);
+
 function animate() {
   if (gamePaused) return;
   requestAnimationFrame(animate);
   c.clearRect(0, 0, canvas.width, canvas.height);
+
+  //  drawing background
+  layer1.draw();
+  layer2.draw();
+  layer3.draw();
+  layer4.draw();
+  layer5.draw();
+  // if (keys.right.pressed) {
+  //   if (lastKey === "right" && scrollOffset<5000) layer2.update(1);
+  //   else if (lastKey === "left" && scrollOffset>-5000) layer2.update(-1);
+  // } else if (keys.left.pressed) {
+  //   if (lastKey === "left" && scrollOffset>-5000) layer2.update(-1);
+  //   else if (lastKey === "right" && scrollOffset<5000) layer2.update(1);
+  // }
 
   //  drawing zombies, player and cannons
   player.update();
@@ -284,6 +304,9 @@ function animate() {
   for (let i = 0; i < boundaries.length; i++) {
     boundaries[i].draw();
   }
+  for (let i = 0; i < platforms.length; i++) {
+    platforms[i].draw();
+  }
   for (let i = 0; i < mines.length; i++) {
     if (mines[i].isDeployed) mines[i].update();
   }
@@ -291,11 +314,14 @@ function animate() {
     if (traps[i].isDeployed) traps[i].update();
   }
 
+  // console.log(
+  //   "platform position " + (platform.position.x + platform.width / 2)
+  // );
   //    player movements
-  if (keys.right.pressed && player.position.x <= 737) {
+  if (keys.right.pressed && player.position.x <= 862) {
     if (lastKey === "right") player.velocity.x = Pvelocity;
     else if (lastKey === "left") player.velocity.x = -Pvelocity;
-  } else if (keys.left.pressed && player.position.x >= 487) {
+  } else if (keys.left.pressed && player.position.x >= 362) {
     if (lastKey === "left") player.velocity.x = -Pvelocity;
     else if (lastKey === "right") player.velocity.x = Pvelocity;
   } else {
@@ -303,17 +329,29 @@ function animate() {
     if (keys.right.pressed)
       sorroundings.forEach((sorrounding) => {
         if (sorrounding) {
-          if (sorrounding instanceof Boundary)
-            sorrounding.position.x += Pvelocity;
-          else sorrounding.position.x -= Pvelocity;
+          if (scrollOffset > -15000) {
+            scrollOffset -= 1;
+            layer1.update(1);
+            layer2.update(1);
+            layer3.update(1);
+            layer4.update(1);
+            layer5.update(1);
+            sorrounding.position.x -= Pvelocity;
+          }
         }
       });
     else if (keys.left.pressed)
       sorroundings.forEach((sorrounding) => {
         if (sorrounding) {
-          if (sorrounding instanceof Boundary)
-            sorrounding.position.x -= Pvelocity;
-          else sorrounding.position.x += Pvelocity;
+          if (scrollOffset < 15000) {
+            scrollOffset += 1;
+            layer1.update(-1);
+            layer2.update(-1);
+            layer3.update(-1);
+            layer4.update(-1);
+            layer5.update(-1);
+            sorrounding.position.x += Pvelocity;
+          }
         }
       });
   }

@@ -44,7 +44,7 @@ class Gun {
   removeBullet(index) {
     const removedBullet = this.bullets.splice(index, 1)[0];
     const ind = sorroundings.indexOf(removedBullet);
-    sorroundings.splice(ind,1);
+    sorroundings.splice(ind, 1);
   }
 
   // Method to update and draw bullets
@@ -90,6 +90,7 @@ class Gun {
         theta: theta,
         collisionBlocks: this.blocks,
         zombies,
+        platforms,
         damage: this.damage,
         player: this.player,
       });
@@ -210,7 +211,7 @@ class Cannon extends Gun {
       spread,
       color,
     });
-    this.position = {x:x,y:y};
+    this.position = { x: x, y: y };
     this.width = width;
     this.height = height;
     this.direction = direction;
@@ -226,13 +227,15 @@ class Cannon extends Gun {
     if (this.ammo > 0) {
       const cannonBall1 = new Bullet({
         position: {
-          x: this.position.x + this.width * Math.cos(this.alpha) - this.offset.x,
+          x:
+            this.position.x + this.width * Math.cos(this.alpha) - this.offset.x,
           y: this.position.y + this.width * Math.sin(this.alpha),
         },
         velocity: this.velocity,
         theta: this.alpha,
         collisionBlocks: this.blocks,
         zombies,
+        platforms,
         damage: this.damage,
         player: this.player,
         radius: 12,
@@ -240,13 +243,15 @@ class Cannon extends Gun {
       });
       const cannonBall2 = new Bullet({
         position: {
-          x: this.position.x + this.width * Math.cos(this.alpha) - this.offset.x,
+          x:
+            this.position.x + this.width * Math.cos(this.alpha) - this.offset.x,
           y: this.position.y + this.width * Math.sin(this.alpha),
         },
         velocity: this.velocity,
         theta: this.alpha + 0.05,
         collisionBlocks: this.blocks,
         zombies,
+        platforms,
         damage: this.damage,
         player: this.player,
         radius: 12,
@@ -261,6 +266,7 @@ class Cannon extends Gun {
         theta: this.alpha - 0.05,
         collisionBlocks: this.blocks,
         zombies,
+        platforms,
         damage: this.damage,
         player: this.player,
         radius: 12,

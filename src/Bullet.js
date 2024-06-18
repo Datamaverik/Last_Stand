@@ -6,6 +6,7 @@ class Bullet {
     theta,
     gravity = 0.08,
     collisionBlocks,
+    platforms,
     radius = 5,
     zombies,
     player,
@@ -19,6 +20,7 @@ class Bullet {
     this.dy = this.velocity * Math.sin(this.theta);
     this.gravity = gravity;
     this.collisionBlocks = collisionBlocks;
+    this.platforms = platforms;
     this.zombies = zombies;
     this.radius = radius;
     this.player = player;
@@ -49,6 +51,14 @@ class Bullet {
       if (bulletCollision({ bul: this, obj: collisionBlock })) {
         collisionBlock.health -= this.damage;
         if (collisionBlock.health < 0) this.collisionBlocks.splice(i, 1);
+        if (this.isCannon) playSound("cannonHit", 0.2);
+        return true;
+      }
+    }
+    for (let i = 0; i < this.platforms.length; i++) {
+      const platform = this.platforms[i];
+
+      if (bulletCollision({ bul: this, obj: platform })) {
         if (this.isCannon) playSound("cannonHit", 0.2);
         return true;
       }
@@ -126,6 +136,7 @@ class Mine {
     range = { width: 100, height: 150 },
     blastDuration = 400,
     sound = sounds["MineExplosion"].cloneNode(),
+    imgSrc = "./assets/landMine.png",
   }) {
     this.position = position;
     this.damageBox = {
@@ -144,11 +155,20 @@ class Mine {
     this.height = 10;
     this.isDeployed = false;
     this.sound = sound;
+    this.img = new Image();
+    this.img.src = imgSrc;
   }
 
   draw() {
-    c.fillStyle = "darkGreen";
-    c.fillRect(this.position.x, this.position.y, this.width, this.height);
+    c.drawImage(
+      this.img,
+      this.position.x,
+      this.position.y,
+      this.width,
+      this.height
+    );
+    // c.fillStyle = "darkGreen";
+    // c.fillRect(this.position.x, this.position.y, this.width, this.height);
 
     this.damageBox.position.x = this.position.x - 30;
     this.damageBox.position.y = this.position.y - 140;
@@ -221,6 +241,7 @@ class SpikeTrap {
     interval = 2000,
     stabDuration = 500,
     sound = sounds["SpikeTrap"].cloneNode(),
+    imgSrc = "./assets/spikeTrap.png",
   }) {
     this.position = position;
     this.damage = damage;
@@ -238,24 +259,36 @@ class SpikeTrap {
     this.gravity = 0.5;
     this.numSpikes = 3;
     this.sound = sound;
+    this.img = new Image();
+    this.img.src = imgSrc;
+    this.offset = { x: 20, y: 23 };
   }
 
   draw() {
-    c.fillStyle = "yellow";
-    c.fillRect(this.position.x, this.position.y, this.width, this.height); // Draw the base
+    c.drawImage(
+      this.img,
+      this.position.x - this.offset.x,
+      this.position.y - this.offset.y,
+      this.width * 2,
+      this.height * 4
+    );
+    // c.fillStyle = "yellow";
+    // c.fillRect(this.position.x, this.position.y, this.width, this.height); // Draw the base
 
     // Draw the spikes as triangles
     c.fillStyle = "grey";
+    c.strokeStyle = "black";
     for (let i = 0; i < this.numSpikes; i++) {
       const spikeWidth = this.width / this.numSpikes;
       const x = this.position.x + i * spikeWidth;
-      const y = this.position.y - this.spikeExtension;
+      const y = this.position.y - this.spikeExtension + 5;
       c.beginPath();
-      c.moveTo(x, this.position.y);
+      c.moveTo(x, this.position.y + 5);
       c.lineTo(x + spikeWidth / 2, y);
-      c.lineTo(x + spikeWidth, this.position.y);
+      c.lineTo(x + spikeWidth, this.position.y + 5);
       c.closePath();
       c.fill();
+      c.stroke();
     }
   }
 
