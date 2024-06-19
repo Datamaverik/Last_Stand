@@ -28,14 +28,14 @@ let collisionDetected,
   currentGun,
   damagePUTimeout = null,
   PUmsgTimeout = null,
-  duration = 260,
+  duration = 300,
   speedDur = 0,
   blockInd = 0,
   mineInd = 0,
   trapInd = 0,
   scrollOffset = 0,
   damageDur = 0,
-  Pvelocity = 2,
+  Pvelocity = 3,
   zombieCount = 0,
   totalZombies = 0,
   zombies = [],
@@ -51,6 +51,7 @@ const Hmeter = document.getElementById("Hmeter"),
   pauseScr = document.getElementById("pauseScr"),
   msg = document.getElementById("msg"),
   restartBtn = document.getElementById("restartBtn"),
+  startBtn = document.getElementById("startBtn"),
   ammo = document.getElementById("ammo"),
   gunText = document.getElementById("gun"),
   powerUpScr = document.getElementById("powerUpScr"),
@@ -62,8 +63,18 @@ const Hmeter = document.getElementById("Hmeter"),
   defenseBlockBtn = document.getElementById("defenseBlock"),
   mineBtn = document.getElementById("mineBtn"),
   trapBtn = document.getElementById("trapBtn"),
-  PUmsg = document.getElementById("PUmsg");
+  PUmsg = document.getElementById("PUmsg"),
+  gunStatsDiv = document.getElementById("gunStats"),
+  instructionsDiv = document.getElementById("instructions"),
+  viewGunStatsLink = document.getElementById("viewGunStats"),
+  backToInstrcutionsLink = document.getElementById("backToInstructions");
 
+window.onload = () => {
+  pauseScr.style.display = "flex";
+  restartBtn.style.display = "none";
+  powerUpScr.style.display = "none";
+  inventoryScr.style.display = "none";
+};
 const mouse = {
   x: undefined,
   y: undefined,
@@ -389,6 +400,9 @@ function GameOver(text) {
   msg.textContent = text;
   gamePaused = true;
   pauseScr.style.display = "flex";
+  document.getElementById("instructions").style.display = "none";
+  restartBtn.style.display = "block";
+  startBtn.style.display = "none";
   pauseScr.showModal();
   clearTimeout(zombieInterval);
   HordeSoundOff();
@@ -415,7 +429,7 @@ function decreaseTimer() {
       startCannonFire(3000);
     }
     duration--;
-    timeSpent = 260 - duration;
+    timeSpent = 300 - duration;
     if (timeSpent === preparationTime) {
       startGame();
     }
@@ -491,7 +505,7 @@ function updatePUmsg(msg, color) {
       PUmsg.classList.remove("fade-in");
       PUmsg.classList.add("fade-out");
       PUmsgTimeout = null;
-    }, 1500);
+    }, 5500);
   } else {
     clearTimeout(PUmsgTimeout);
     PUmsgTimeout = setTimeout(() => {

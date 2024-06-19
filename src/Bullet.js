@@ -73,14 +73,14 @@ class Bullet {
         if (zombie.health > 0) zombie.health -= this.damage;
 
         if (zombie.health <= 0) {
-          if (!zombie.dead) zombie.switchSprite("DeadZ");
+          zombie.switchSprite("DeadZ");
           zombie.dead = true;
           zombie.velocity.x = 0;
-          setTimeout(() => {
-            const ind = sorroundings.indexOf(this.zombies.splice(i, 1));
-            sorroundings.splice(ind, 1);
-            zombieCount--;
-          }, 500);
+          zombie.ind = sorroundings.indexOf(zombie);
+          zombie.ind2 = i;
+          zombies.splice(zombie.ind2, 1);
+          sorroundings.splice(zombie.ind, 1);
+          zombieCount--;
         } else zombie.switchSprite("HurtZ");
 
         if (zombieCount < 2) HordeSoundOff();
@@ -344,14 +344,14 @@ class SpikeTrap {
         if (collision({ obj1: this, obj2: zombie })) {
           zombie.health -= this.damage;
           if (zombie.health <= 0) {
-            if (!zombie.dead) zombie.switchSprite("DeadZ");
+            zombie.switchSprite("DeadZ");
             zombie.dead = true;
             zombie.velocity.x = 0;
-            setTimeout(() => {
-              const ind = sorroundings.indexOf(zombies.splice(i, 1));
-              sorroundings.splice(ind, 1);
-              zombieCount--;
-            }, 500);
+            zombie.ind = sorroundings.indexOf(zombie);
+            zombie.ind2 = i;
+            zombies.splice(zombie.ind2, 1);
+            sorroundings.splice(zombie.ind, 1);
+            zombieCount--;
           } else zombie.switchSprite("HurtZ");
         }
       });

@@ -7,8 +7,47 @@
   </head>
   <body>
     <dialog id="pauseScr">
+      <div id="instructions">
+        <h1 style="text-align: center;">LAST STAND</h1>
+        <p>
+          WELCOME TO LAST STAND!! The aim of this game is simple, SURVIVE!!
+          against a relentless horde of zombies for 3.5 minutes. We are not so
+          ruthless to leave you stranded withuot any supplies during a zombie
+          apocalypse. You are given defense items in the inventroy which you use
+          to set your base around the cannons, YES CANNONS!! they are there to
+          protect you. The cannon shoot on eihter side at 10s of interval
+          automatically. Good Luck Survivor!!
+        </p>
+        <p style="font-size: 1.5rem; text-align: center;"><b>Controls:</b></p>
+        <p>
+          <u>Change Guns</u> : Press the number keys to change guns,
+          <b>'1'</b> :M4A1, <b>'2'</b> :AWM, <b>'3'</b> :AKM, <b>'4'</b> :Desert
+          Eagle, <b>'5'</b> :UZI. (<a href="#" id="viewGunStats">View Gun Stats</a>). <u>Movements</u> : <b>'a'</b> :Move left,
+          <b>'d'</b> :Move right, <b>'k'</b> :Jump, <b>'left click'</b> :To
+          shoot.
+        </p>
+        <p>
+          <u>Inventory</u> : <b>'i'</b> :opens inventory, where you can select
+          and deploy defense items like Defense Blocks, Spike Traps and Land
+          Mines.(Beware: the iventory can only be accessed during the
+          preparation phase which is the first 30s of the game)
+        </p>
+        <p>
+          <u>Shop</u> : <b>'s'</b> :opens shop where you can use your score to
+          purchase power ups and ammo.
+        </p>
+        <p>
+          <u>JetPack</u> : <b>'j'</b> :toggles jetpack, Beware: it'll only work
+          as long as you have enough fuel, so use jetpack wisely. The jetpack
+          will refuel automatically as time passes.
+        </p>
+      </div>
+      <div id="gunStats">
+        <p><a href="#" id="backToInstructions">Back to Instructions</a></p>
+      </div>
       <p id="msg"></p>
       <button id="restartBtn">Restart</button>
+      <button id="startBtn">Start</button>
     </dialog>
     <dialog id="powerUpScr">
       <div>
@@ -20,31 +59,31 @@
         data-tooltip="🩹 Health Pack: Feeling a bit woozy? Grab this and pretend you're invincible again!"
         id="healthPU"
       >
-        Health Pack 💰1100
+        Health Pack 💰1300
       </button>
       <button
         class="powerUp"
         data-tooltip="🔫 Ammo Pack: Because running out of bullets during a zombie apocalypse is just embarrassing."
         id="ammoPU"
       >
-        Ammo Pack 💰1250
+        Ammo Pack 💰1750
       </button>
       <button
         class="powerUp"
         data-tooltip="⚡ Speed Boost: Need to run away faster? Activate this and leave the zombies in the dust. Literally."
         id="speedPU"
       >
-        Speed Boost 💰1000
+        Speed Boost 💰1200
       </button>
       <button
         class="powerUp"
         data-tooltip="💥 Damage Boost: Because sometimes you just need to hit harder. Go on, give those zombies a headache!"
         id="damagePU"
       >
-        Damage Boost 💰1400
+        Damage Boost 💰1500
       </button>
     </dialog>
-    <dialog id="inventoryScr" style="text-align: center;">
+    <dialog id="inventoryScr" style="text-align: center; display: 'none'">
       <p>Inventory</p>
       <button class="inventoryItems" id="defenseBlock">Defense Blocks</button>
       <button class="inventoryItems" id="trapBtn">Traps</button>
@@ -52,16 +91,15 @@
     </dialog>
     <div id="container">
       <div id="shopCont">
-        <button id="setting">Settings</button>
         <p class="text" id="score">Score:💰00</p>
       </div>
       <div id="PUTimerCont">
-        <p class="text" id="PUmsg">Not enough credit</p>
+        <p class="text" id="PUmsg"></p>
         <div
           style="display: flex; justify-content: center; align-items: center"
         >
-          <div id="timer2">0:00</div>
-          <div id="timer3">0:00</div>
+          <div id="timer2"></div>
+          <div id="timer3"></div>
         </div>
       </div>
       <div id="header" style="display: flex; flex-direction: column">

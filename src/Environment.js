@@ -225,3 +225,45 @@ const layer1 = new Background({
   factor: 0.01,
 });
 
+function showGunStats() {
+  guns.forEach((gun) => {
+    const gunDiv = document.createElement("div");
+    gunDiv.id = 'gunDiv';
+    const gunIcon = document.createElement("div");
+    gunIcon.id = "gunIcon2";
+    const gunDetails = document.createElement("div");
+    gunDetails.id = "gunDetails";
+    gunDetails.style.display = "flex";
+    gunIcon.innerHTML = gunSvg[gun.name];
+    gunDiv.innerHTML = `
+        <h2>${gun.name}</h2>
+        <p>Gun Rate: ${gun.gunrate}</p>
+        <p>Damage: ${gun.damage}</p>
+        <p>Magazine Size: ${gun.mag}</p>
+        <p>Reload Time: ${gun.reloadTime}s</p>
+        <p>Spread: ${gun.spread / (Math.PI / 180)}°</p>
+      `;
+    gunDetails.appendChild(gunIcon);
+    gunDetails.appendChild(gunDiv);
+    gunStatsDiv.appendChild(gunDetails);
+  });
+  instructionsDiv.style.display = "none";
+  gunStatsDiv.style.display = "grid";
+}
+
+// Function to go back to instructions
+function showInstructions() {
+  gunStatsDiv.style.display = "none";
+  instructionsDiv.style.display = "block";
+}
+
+// Event listeners
+viewGunStatsLink.addEventListener("click", (e) => {
+  e.preventDefault();
+  showGunStats();
+});
+
+backToInstrcutionsLink.addEventListener("click", (e) => {
+  e.preventDefault();
+  showInstructions();
+});

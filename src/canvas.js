@@ -165,8 +165,9 @@ const cannonLeft = new Cannon({
   color: "rgb(108, 120, 140)",
   platforms,
   imgOffset: { x: 0, y: -20 },
+  gravity: 0.2,
 });
-const cannonRight = new Cannon({ 
+const cannonRight = new Cannon({
   x: 733,
   y: 533,
   width: 40,
@@ -187,11 +188,12 @@ const cannonRight = new Cannon({
   color: "rgb(108, 120, 140)",
   platforms,
   imgOffset: { x: 0, y: -20 },
+  gravity: 0.2,
 });
 const bulletTrack = new Bullet({
   position: {
     x: player.position.x + 30,
-    y: player.position.y+30 + player.height/2,
+    y: player.position.y + 30 + player.height / 2,
   },
   velocity: 6,
   theta,
@@ -255,8 +257,8 @@ function updateParticles() {
   if (player.jetpackActive) {
     for (let i = 0; i < 10; i++) {
       const p = new Particle(
-        player.position.x + player.width / 2 +13,
-        player.position.y + player.height/2 +20,
+        player.position.x + player.width / 2 + 13,
+        player.position.y + player.height / 2 + 20,
         (Math.random() * 2 * speed - speed) / 2,
         Math.random() * speed
       );
@@ -327,14 +329,8 @@ function animate() {
   //  drawing trajectory of bullets
   const trajectoryPoints = bulletTrack.calculateTrajectoryPoints(
     {
-      x:
-        player.position.x +
-        30 +
-        currentGun.width * Math.cos(theta),
-      y:
-        player.position.y +
-        30 +
-        currentGun.width * Math.sin(theta),
+      x: player.position.x + 30 + currentGun.width * Math.cos(theta),
+      y: player.position.y + 30 + currentGun.width * Math.sin(theta),
     },
     theta
   );
@@ -530,6 +526,8 @@ addEventListener("keydown", ({ key }) => {
         playSound("pause");
         msg.textContent = 'Press "Esc" to resume';
         gamePaused = true;
+        restartBtn.style.display = "block";
+        startBtn.style.display = "none";
         HordeSoundOff();
         powerUpScr.close();
         powerUpScr.style.display = "none";
@@ -651,22 +649,22 @@ document.querySelectorAll(".powerUp").forEach((btn, i) => {
     sounds["click"].play();
     switch (i) {
       case 0:
-        if (player.score < 1100) {
+        if (player.score < 1300) {
           updatePUmsg("Not enough credits!!", "red");
           return;
         }
-        player.score -= 1100;
+        player.score -= 1300;
         if (player.health > 80) player.health = 100;
         else player.health += 20;
         usePowerUp();
         updatePUmsg("Health increased by 20HP", "green");
         break;
       case 1:
-        if (player.score < 1250) {
+        if (player.score < 1750) {
           updatePUmsg("Not enough credits!!", "red");
           return;
         }
-        player.score -= 1250;
+        player.score -= 1750;
         guns.forEach((gun) => {
           if (gun.name === currentGun.name) {
             gun.ammo += gun.magLimit;
@@ -677,32 +675,32 @@ document.querySelectorAll(".powerUp").forEach((btn, i) => {
         updatePUmsg("Ammo increased by 1 mag capacity", "green");
         break;
       case 2:
-        if (player.score < 1000) {
+        if (player.score < 1200) {
           updatePUmsg("Not enough credits!!", "red");
           return;
         }
-        player.score -= 1000;
-        Pvelocity = 4;
+        player.score -= 1200;
+        Pvelocity = 5;
         speedDur += 15;
         if (!speedPUTimeout) {
           speedPUTimeout = setTimeout(() => {
-            Pvelocity = 2;
+            Pvelocity = 3;
           }, speedDur * 1000);
         } else {
           clearTimeout(speedPUTimeout);
           speedPUTimeout = setTimeout(() => {
-            Pvelocity = 2;
+            Pvelocity = 3;
           }, speedDur * 1000);
         }
         usePowerUp();
         updatePUmsg("Speed boosted for 15s", "green");
         break;
       case 3:
-        if (player.score < 1400) {
+        if (player.score < 1500) {
           updatePUmsg("Not enough credits!!", "red");
           return;
         }
-        player.score -= 1400;
+        player.score -= 1500;
         damageDur += 15;
         if (!damagePUTimeout) {
           guns.forEach((gun) => {
@@ -728,7 +726,9 @@ document.querySelectorAll(".powerUp").forEach((btn, i) => {
   });
 });
 
-window.onload = () => {
+startBtn.onclick = () => {
+  msg.textContent = "";
+  playSound("click");
   pauseScr.style.display = "none";
   powerUpScr.style.display = "none";
   inventoryScr.style.display = "none";

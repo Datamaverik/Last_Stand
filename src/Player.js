@@ -23,8 +23,8 @@ class Player {
     this.boundaries = boundaries;
     this.mines = mines;
     this.platforms = platforms;
-    this.jumpStrength = 13;
-    this.gravity = 0.5;
+    this.jumpStrength = 8;
+    this.gravity = 1.5;
     this.zombies = zombies;
     this.health = 100;
     this.grounded = false;
@@ -144,7 +144,7 @@ class Player {
         //  Call the jump method of jumping zombie
         if (this instanceof JumpingZombie) {
           this.jump();
-          this.switchSprite("Jump"+this.direction);
+          this.switchSprite("Jump" + this.direction);
         }
 
         if (this.velocity.x > 0) {
@@ -206,25 +206,13 @@ class Player {
             if (!this.dead) this.switchSprite("DeadZ");
             this.dead = true;
             this.velocity.x = 0;
-            setTimeout(() => {
-              const ind = this.zombies.indexOf(this);
-              const ind2 = sorroundings.indexOf(zombies.splice(ind, 1));
-              sorroundings.splice(ind2, 1);
-              zombieCount--;
-            }, 500);
+            this.ind = this.zombies.indexOf(this);
+            this.ind2 = sorroundings.indexOf(this);
+            this.zombies.splice(this.ind, 1);
+            sorroundings.splice(this.ind2, 1);
+            zombieCount--;
             return;
           } else this.switchSprite("HurtZ");
-
-          // if (this.health <= 0) {
-          //   if (!this.dead) this.switchSprite("DeadZ");
-          //   this.dead = true;
-          //   this.velocity.x = 0;
-          //   setTimeout(() => {
-          //     const ind = sorroundings.indexOf(this.zombies.splice(i, 1));
-          //     sorroundings.splice(ind, 1);
-          //     zombieCount--;
-          //   }, 500);
-          // } else this.switchSprite("HurtZ");
         }
       }
     }
@@ -237,7 +225,7 @@ class Player {
         //  Call the jump method of jumping zombie
         if (this instanceof JumpingZombie) {
           this.jump();
-          this.switchSprite("Jump"+this.direction);
+          this.switchSprite("Jump" + this.direction);
         }
         if (this.velocity.x > 0) {
           this.velocity.x = 0;
@@ -490,6 +478,8 @@ class Zombie extends Player {
     this.scale = scale;
     this.factor = 1;
     this.direction = "R";
+    this.ind;
+    this.ind2;
   }
 
   draw() {
@@ -522,7 +512,7 @@ class Zombie extends Player {
       }
       playZAttack(0.5);
       const ind = randomIntFromRange(1, 3);
-      this.switchSprite(`Attack_${ind}`+this.direction);
+      this.switchSprite(`Attack_${ind}` + this.direction);
       player.health -= this.damage + 0.25 * zombies.length;
       if (player instanceof Player) {
         Hmeter.value = player.health / 100;
@@ -565,7 +555,7 @@ class Zombie extends Player {
         this.direction = "L";
         this.velocity.x = -this.speed;
       }
-      this.switchSprite("Walk"+this.direction);
+      this.switchSprite("Walk" + this.direction);
     }
   }
 
@@ -733,6 +723,8 @@ class JumpingZombie extends Zombie {
     this.image;
     this.offset = offset;
     this.scale = scale;
+    this.ind;
+    this.ind2;
   }
 
   draw() {
