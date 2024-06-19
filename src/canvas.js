@@ -73,10 +73,10 @@ player.switchSprite("IdleR");
 //   color: "gray",
 // });
 Hmeter.value = player.health / 100;
-const platform = new Platform({
-  position: { x: canvas.width / 2 - 75, y: 250 },
-  width: 150,
-});
+// const platform = new Platform({
+//   position: { x: canvas.width / 2 - 75, y: 250 },
+//   width: 150,
+// });
 //  creating guns
 const M4A1 = new Gun({
   ammo: 60,
@@ -210,13 +210,13 @@ sorroundings = [
   cannonLeft,
   cannonRight,
   ...blocks,
-  platform,
 ];
 
 function changeGun(gun) {
   if (currentGun.isFiring || currentGun.isReloading) return;
 
   //  update the current gun
+  playSound("gunChange");
   currentGun = gun;
   gunIcon.innerHTML = gunSvg[currentGun.name];
   const factor = currentGun.magLimit / 100;
@@ -318,7 +318,7 @@ function animate() {
     zombies[i].detectPlayerCollision(player);
   }
   player.zombies = zombies;
-  platform.draw();
+  // platform.draw();
   theta = calculateAngle(player);
   currentGun.draw();
   cannonLeft.draw();
@@ -417,16 +417,16 @@ function animate() {
   }
 
   //    platform collision left
-  if (
-    player.position.y + player.height <= platform.position.y &&
-    player.position.y + player.height + player.velocity.y >=
-      platform.position.y &&
-    player.position.x + player.width >= platform.position.x &&
-    player.position.x <= platform.position.x + platform.width
-  ) {
-    player.velocity.y = 0;
-    player.grounded = true;
-  }
+  // if (
+  //   player.position.y + player.height <= platform.position.y &&
+  //   player.position.y + player.height + player.velocity.y >=
+  //     platform.position.y &&
+  //   player.position.x + player.width >= platform.position.x &&
+  //   player.position.x <= platform.position.x + platform.width
+  // ) {
+  //   player.velocity.y = 0;
+  //   player.grounded = true;
+  // }
 
   //  adding fire effect if jetpack is active
   updateParticles();
@@ -680,16 +680,16 @@ document.querySelectorAll(".powerUp").forEach((btn, i) => {
           return;
         }
         player.score -= 1200;
-        Pvelocity = 5;
+        Pvelocity = 4;
         speedDur += 15;
         if (!speedPUTimeout) {
           speedPUTimeout = setTimeout(() => {
-            Pvelocity = 3;
+            Pvelocity = 2;
           }, speedDur * 1000);
         } else {
           clearTimeout(speedPUTimeout);
           speedPUTimeout = setTimeout(() => {
-            Pvelocity = 3;
+            Pvelocity = 2;
           }, speedDur * 1000);
         }
         usePowerUp();

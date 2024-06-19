@@ -150,6 +150,7 @@ class Gun {
   reload() {
     if (this.isReloading || this.isFiring) return; // Check if already reloading
     this.isReloading = true; // Set reloading flag
+    playSound(this.name+"r");
     ammo.textContent = `Reloading....`;
     //  setting color of the indicator
     if (this.ammo > 0) {
