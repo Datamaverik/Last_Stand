@@ -14,13 +14,28 @@ const player = new Player({
       framesMax: 7,
       id: "Idle",
     },
+    IdleL: {
+      imageSrc: "./assets/SoldierLeft/Idle.png",
+      framesMax: 7,
+      id: "Idle",
+    },
     RunR: {
       imageSrc: "./assets/SoldierRight/Run.png",
       framesMax: 6,
       id: "RunR",
     },
+    RunL: {
+      imageSrc: "./assets/SoldierLeft/Run.png",
+      framesMax: 6,
+      id: "RunR",
+    },
     ShotR: {
       imageSrc: "./assets/SoldierRight/Shot.png",
+      framesMax: 4,
+      id: "ShotR",
+    },
+    ShotL: {
+      imageSrc: "./assets/SoldierLeft/Shot.png",
       framesMax: 4,
       id: "ShotR",
     },
@@ -149,8 +164,9 @@ const cannonLeft = new Cannon({
   offset: { x: 20, y: 0 },
   color: "rgb(108, 120, 140)",
   platforms,
+  imgOffset: { x: 0, y: -20 },
 });
-const cannonRight = new Cannon({
+const cannonRight = new Cannon({ 
   x: 733,
   y: 533,
   width: 40,
@@ -170,11 +186,12 @@ const cannonRight = new Cannon({
   offset: { x: 0, y: 0 },
   color: "rgb(108, 120, 140)",
   platforms,
+  imgOffset: { x: 0, y: -20 },
 });
 const bulletTrack = new Bullet({
   position: {
-    x: player.position.x + player.width / 2,
-    y: player.position.y + player.height / 2,
+    x: player.position.x + 30,
+    y: player.position.y+30 + player.height/2,
   },
   velocity: 6,
   theta,
@@ -238,8 +255,8 @@ function updateParticles() {
   if (player.jetpackActive) {
     for (let i = 0; i < 10; i++) {
       const p = new Particle(
-        player.position.x + player.width / 2,
-        player.position.y + player.height,
+        player.position.x + player.width / 2 +13,
+        player.position.y + player.height/2 +20,
         (Math.random() * 2 * speed - speed) / 2,
         Math.random() * speed
       );
@@ -312,11 +329,11 @@ function animate() {
     {
       x:
         player.position.x +
-        player.width / 2 +
+        30 +
         currentGun.width * Math.cos(theta),
       y:
         player.position.y +
-        player.height / 2 +
+        30 +
         currentGun.width * Math.sin(theta),
     },
     theta
@@ -352,19 +369,21 @@ function animate() {
     if (lastKey === "right") {
       changeSprite();
       player.velocity.x = Pvelocity;
-      console.log("moving right");
+      // console.log("moving right");
     } else if (lastKey === "left") {
+      changeSprite();
       player.velocity.x = -Pvelocity;
-      console.log("moving left");
+      // console.log("moving left");
     }
   } else if (keys.left.pressed && player.position.x >= 362) {
     if (lastKey === "left") {
+      changeSprite();
       player.velocity.x = -Pvelocity;
-      console.log("moving left");
+      // console.log("moving left");
     } else if (lastKey === "right") {
       changeSprite();
       player.velocity.x = Pvelocity;
-      console.log("moving right");
+      // console.log("moving right");
     }
   } else {
     player.velocity.x = 0;
@@ -380,7 +399,7 @@ function animate() {
             layer4.update(1);
             layer5.update(1);
             sorrounding.position.x -= Pvelocity;
-            console.log("moving surrounding to the left!");
+            // console.log("moving surrounding to the left!");
           }
         }
       });
@@ -395,7 +414,7 @@ function animate() {
             layer4.update(-1);
             layer5.update(-1);
             sorrounding.position.x += Pvelocity;
-            console.log("moving surrounding to the right!");
+            // console.log("moving surrounding to the right!");
           }
         }
       });
@@ -612,6 +631,7 @@ addEventListener("mousedown", () => {
   } else if (!preparationPhase) {
     currentGun.startFiring(player);
     if (lastKey === "right") player.switchSprite("ShotR");
+    if (lastKey === "left") player.switchSprite("ShotL");
     //  apply shotL
   }
 });
@@ -662,16 +682,16 @@ document.querySelectorAll(".powerUp").forEach((btn, i) => {
           return;
         }
         player.score -= 1000;
-        Pvelocity = 7.5;
+        Pvelocity = 4;
         speedDur += 15;
         if (!speedPUTimeout) {
           speedPUTimeout = setTimeout(() => {
-            Pvelocity = 3.8;
+            Pvelocity = 2;
           }, speedDur * 1000);
         } else {
           clearTimeout(speedPUTimeout);
           speedPUTimeout = setTimeout(() => {
-            Pvelocity = 3.8;
+            Pvelocity = 2;
           }, speedDur * 1000);
         }
         usePowerUp();

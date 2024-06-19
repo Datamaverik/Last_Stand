@@ -10,7 +10,7 @@ class Gun {
     name,
     player,
     spread,
-    color = "gray",
+    color = "black",
   }) {
     this.bullets = [];
     this.ammo = ammo;
@@ -29,7 +29,7 @@ class Gun {
     this.lastFired = 0;
     this.spread = spread;
     this.width = 55;
-    this.height = 20;
+    this.height = 10;
     this.recoilOffset = { x: 0, y: 0 };
     this.color = color;
   }
@@ -80,10 +80,10 @@ class Gun {
       const bullet = new Bullet({
         position: {
           x:
-            player.position.x + player.width / 2 + this.width * Math.cos(angle),
+            player.position.x + 30 + this.width * Math.cos(angle),
           y:
             player.position.y +
-            player.height / 2 +
+            30+
             this.width * Math.sin(angle),
         },
         velocity: this.velocity,
@@ -114,9 +114,9 @@ class Gun {
   draw() {
     c.save();
     c.translate(
-      this.player.position.x + this.player.width / 2 + this.recoilOffset.x,
-      this.player.position.y + this.player.height / 2 + this.recoilOffset.y
-    );
+      this.player.position.x + 30 + this.recoilOffset.x,
+      this.player.position.y +30 + this.recoilOffset.y
+    )
     c.rotate(theta);
     c.fillStyle = this.color;
     c.fillRect(0, -this.height / 2, this.width, this.height);
@@ -201,6 +201,7 @@ class Cannon extends Gun {
     alpha,
     offset,
     color,
+    imgOffset
   }) {
     super({
       ammo,
@@ -223,6 +224,10 @@ class Cannon extends Gun {
     this.offset = offset;
     this.interval;
     this.color = color;
+    this.image = new Image();
+    this.image.src = "./assets/cannon.png";
+    this.imgOffset = imgOffset;
+
   }
 
   // Override the fireBullet method to use the fixed position and calculated angle
@@ -299,12 +304,26 @@ class Cannon extends Gun {
   }
 
   draw() {
-    c.save();
-    c.translate(this.position.x, this.position.y);
-    c.rotate(this.angle);
-    c.fillStyle = this.color;
-    c.fillRect(0, -this.height / 2, this.width, this.height);
-    c.restore();
+    // c.save();
+    // c.translate(this.position.x, this.position.y);
+    // c.rotate(this.angle);
+    // c.fillStyle = this.color;
+    // c.fillRect(0, -this.height / 2, this.width, this.height);
+    // c.restore();
+
+     c.save();
+     c.translate(this.position.x, this.position.y);
+     c.rotate(this.angle - Math.PI/2);
+
+     // Adjust the position to align the image correctly
+     // Assuming you want to draw the image centered at this.position.x, this.position.y
+     // Adjust xOffset and yOffset based on how you want the image to be positioned
+     let xOffset = -this.image.width / 2;
+     let yOffset = -this.image.height / 2;
+
+     c.drawImage(this.image, xOffset-this.imgOffset.x, yOffset-this.imgOffset.y);
+
+     c.restore();
   }
 }
 

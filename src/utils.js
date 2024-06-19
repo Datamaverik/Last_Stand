@@ -35,7 +35,7 @@ let collisionDetected,
   trapInd = 0,
   scrollOffset = 0,
   damageDur = 0,
-  Pvelocity = 2.8,
+  Pvelocity = 2,
   zombieCount = 0,
   totalZombies = 0,
   zombies = [],
@@ -149,8 +149,18 @@ function spawnZombies(interval) {
             framesMax: 7,
             id: "WalkR",
           },
+          WalkL: {
+            imageSrc: "./assets/ZombieWomanLeft/Run.png",
+            framesMax: 7,
+            id: "WalkR",
+          },
           Attack_1: {
             imageSrc: "./assets/ZombieWomanRight/Attack_1.png",
+            framesMax: 4,
+            id: "Attack_1",
+          },
+          Attack_1L: {
+            imageSrc: "./assets/ZombieWomanLeft/Attack_1.png",
             framesMax: 4,
             id: "Attack_1",
           },
@@ -159,8 +169,18 @@ function spawnZombies(interval) {
             framesMax: 4,
             id: "Attack_2",
           },
+          Attack_2L: {
+            imageSrc: "./assets/ZombieWomanLeft/Attack_2.png",
+            framesMax: 4,
+            id: "Attack_2",
+          },
           Attack_3: {
             imageSrc: "./assets/ZombieWomanRight/Attack_3.png",
+            framesMax: 4,
+            id: "Attack_3",
+          },
+          Attack_3L: {
+            imageSrc: "./assets/ZombieWomanLeft/Attack_3.png",
             framesMax: 4,
             id: "Attack_3",
           },
@@ -176,6 +196,11 @@ function spawnZombies(interval) {
           },
           Jump: {
             imageSrc: "./assets/ZombieWomanRight/Jump.png",
+            framesMax: 6,
+            id: "Jump",
+          },
+          JumpL: {
+            imageSrc: "./assets/ZombieWomanLeft/Jump.png",
             framesMax: 6,
             id: "Jump",
           },
@@ -215,8 +240,18 @@ function spawnZombies(interval) {
             framesMax: 10,
             id: "WalkR",
           },
+          WalkL: {
+            imageSrc: "./assets/WildZombieLeft/Walk.png",
+            framesMax: 10,
+            id: "WalkR",
+          },
           Attack_1: {
             imageSrc: "./assets/WildZombieRight/Attack_1.png",
+            framesMax: 4,
+            id: "Attack_1",
+          },
+          Attack_1L: {
+            imageSrc: "./assets/WildZombieLeft/Attack_1.png",
             framesMax: 4,
             id: "Attack_1",
           },
@@ -225,8 +260,18 @@ function spawnZombies(interval) {
             framesMax: 4,
             id: "Attack_2",
           },
+          Attack_2L: {
+            imageSrc: "./assets/WildZombieLeft/Attack_2.png",
+            framesMax: 4,
+            id: "Attack_2",
+          },
           Attack_3: {
             imageSrc: "./assets/WildZombieRight/Attack_3.png",
+            framesMax: 4,
+            id: "Attack_3",
+          },
+          Attack_3L: {
+            imageSrc: "./assets/WildZombieLeft/Attack_3.png",
             framesMax: 4,
             id: "Attack_3",
           },
@@ -277,8 +322,18 @@ function spawnZombies(interval) {
             framesMax: 8,
             id: "WalkR",
           },
+          WalkL: {
+            imageSrc: "./assets/ZombieManLeft/Walk.png",
+            framesMax: 8,
+            id: "WalkR",
+          },
           Attack_1: {
             imageSrc: "./assets/ZombieManRight/Attack_1.png",
+            framesMax: 5,
+            id: "Attack_1",
+          },
+          Attack_1L: {
+            imageSrc: "./assets/ZombieManLeft/Attack_1.png",
             framesMax: 5,
             id: "Attack_1",
           },
@@ -287,8 +342,18 @@ function spawnZombies(interval) {
             framesMax: 4,
             id: "Attack_2",
           },
+          Attack_2L: {
+            imageSrc: "./assets/ZombieManLeft/Attack_2.png",
+            framesMax: 4,
+            id: "Attack_2",
+          },
           Attack_3: {
             imageSrc: "./assets/ZombieManRight/Attack_3.png",
+            framesMax: 5,
+            id: "Attack_3",
+          },
+          Attack_3L: {
+            imageSrc: "./assets/ZombieManLeft/Attack_3.png",
             framesMax: 5,
             id: "Attack_3",
           },
@@ -540,14 +605,23 @@ function HordeSoundOff() {
 }
 
 function changeSprite() {
-  if (keys.right.pressed && !currentGun.isReloading && !currentGun.isFiring)
+  if (
+    keys.right.pressed &&
+    !currentGun.isReloading &&
+    !currentGun.isFiring &&
+    !player.jetpackActive
+  )
     player.switchSprite("RunR");
+  else if (
+    keys.left.pressed &&
+    !currentGun.isReloading &&
+    !currentGun.isFiring &&
+    !player.jetpackActive
+  )
+    player.switchSprite("RunL");
   else if (!currentGun.isReloading && !currentGun.isFiring) {
-    player.switchSprite("IdleR");
+    if (lastKey === "right") player.switchSprite("IdleR");
+    if (lastKey === "left") player.switchSprite("IdleL");
     // console.log('switched to idle');
   }
-
-  // if (keys.left.pressed)
-  //   player.switchSprite("RunL");
-  //  else player.switchSprite("IdleL");
 }

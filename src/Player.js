@@ -144,7 +144,7 @@ class Player {
         //  Call the jump method of jumping zombie
         if (this instanceof JumpingZombie) {
           this.jump();
-          this.switchSprite("Jump");
+          this.switchSprite("Jump"+this.direction);
         }
 
         if (this.velocity.x > 0) {
@@ -214,7 +214,7 @@ class Player {
             }, 500);
             return;
           } else this.switchSprite("HurtZ");
-          
+
           // if (this.health <= 0) {
           //   if (!this.dead) this.switchSprite("DeadZ");
           //   this.dead = true;
@@ -237,7 +237,7 @@ class Player {
         //  Call the jump method of jumping zombie
         if (this instanceof JumpingZombie) {
           this.jump();
-          this.switchSprite("Jump");
+          this.switchSprite("Jump"+this.direction);
         }
         if (this.velocity.x > 0) {
           this.velocity.x = 0;
@@ -380,6 +380,13 @@ class Player {
           this.currentFrame = 0;
         }
         break;
+      case "IdleL":
+        if (this.image !== this.sprite.IdleL) {
+          this.image = this.sprite.IdleL;
+          this.framesMax = this.sprite.IdleL.framesMax;
+          this.currentFrame = 0;
+        }
+        break;
       case "RunR":
         if (this.image !== this.sprite.RunR) {
           this.image = this.sprite.RunR;
@@ -387,10 +394,24 @@ class Player {
           this.currentFrame = 0;
         }
         break;
+      case "RunL":
+        if (this.image !== this.sprite.RunL) {
+          this.image = this.sprite.RunL;
+          this.framesMax = this.sprite.RunL.framesMax;
+          this.currentFrame = 0;
+        }
+        break;
       case "ShotR":
         if (this.image !== this.sprite.ShotR) {
           this.image = this.sprite.ShotR;
           this.framesMax = this.sprite.ShotR.framesMax;
+          this.currentFrame = 0;
+        }
+        break;
+      case "ShotL":
+        if (this.image !== this.sprite.ShotL) {
+          this.image = this.sprite.ShotL;
+          this.framesMax = this.sprite.ShotL.framesMax;
           this.currentFrame = 0;
         }
         break;
@@ -467,6 +488,8 @@ class Zombie extends Player {
     this.image;
     this.offset = offset;
     this.scale = scale;
+    this.factor = 1;
+    this.direction = "R";
   }
 
   draw() {
@@ -499,7 +522,7 @@ class Zombie extends Player {
       }
       playZAttack(0.5);
       const ind = randomIntFromRange(1, 3);
-      this.switchSprite(`Attack_${ind}`);
+      this.switchSprite(`Attack_${ind}`+this.direction);
       player.health -= this.damage + 0.25 * zombies.length;
       if (player instanceof Player) {
         Hmeter.value = player.health / 100;
@@ -534,13 +557,15 @@ class Zombie extends Player {
         this.position.x = player.position.x + player.width + 0.1;
       }
     } else if (!this.dead) {
-      const factor = player.position.x - this.position.x;
-      this.switchSprite("WalkR");
-      if (factor > 0) {
+      this.factor = player.position.x - this.position.x;
+      if (this.factor > 0) {
+        this.direction = "R";
         this.velocity.x = this.speed;
-      } else if (factor < 0) {
+      } else if (this.factor < 0) {
+        this.direction = "L";
         this.velocity.x = -this.speed;
       }
+      this.switchSprite("Walk"+this.direction);
     }
   }
 
@@ -554,9 +579,13 @@ class Zombie extends Player {
     if (
       (this.image === this.sprite.HurtZ ||
         this.image === this.sprite.Attack_1 ||
+        this.image === this.sprite.Attack_1L ||
         this.image === this.sprite.Attack_2 ||
+        this.image === this.sprite.Attack_2L ||
         this.image === this.sprite.Jump ||
-        this.image === this.sprite.Attack_3) &&
+        this.image === this.sprite.JumpL ||
+        this.image === this.sprite.Attack_3 ||
+        this.image === this.sprite.Attack_3L) &&
       this.currentFrame < this.framesMax - 1
     )
       return;
@@ -576,24 +605,52 @@ class Zombie extends Player {
           this.currentFrame = 0;
         }
         break;
-      case "Attack_1":
+      case "WalkL":
+        if (this.image !== this.sprite.WalkL) {
+          this.image = this.sprite.WalkL;
+          this.framesMax = this.sprite.WalkL.framesMax;
+          this.currentFrame = 0;
+        }
+        break;
+      case "Attack_1R":
         if (this.image !== this.sprite.Attack_1) {
           this.image = this.sprite.Attack_1;
           this.framesMax = this.sprite.Attack_1.framesMax;
           this.currentFrame = 0;
         }
         break;
-      case "Attack_2":
+      case "Attack_1L":
+        if (this.image !== this.sprite.Attack_1L) {
+          this.image = this.sprite.Attack_1L;
+          this.framesMax = this.sprite.Attack_1L.framesMax;
+          this.currentFrame = 0;
+        }
+        break;
+      case "Attack_2R":
         if (this.image !== this.sprite.Attack_2) {
           this.image = this.sprite.Attack_2;
           this.framesMax = this.sprite.Attack_2.framesMax;
           this.currentFrame = 0;
         }
         break;
-      case "Attack_3":
+      case "Attack_2L":
+        if (this.image !== this.sprite.Attack_2L) {
+          this.image = this.sprite.Attack_2L;
+          this.framesMax = this.sprite.Attack_2L.framesMax;
+          this.currentFrame = 0;
+        }
+        break;
+      case "Attack_3R":
         if (this.image !== this.sprite.Attack_3) {
           this.image = this.sprite.Attack_3;
           this.framesMax = this.sprite.Attack_3.framesMax;
+          this.currentFrame = 0;
+        }
+        break;
+      case "Attack_3L":
+        if (this.image !== this.sprite.Attack_3L) {
+          this.image = this.sprite.Attack_3L;
+          this.framesMax = this.sprite.Attack_3L.framesMax;
           this.currentFrame = 0;
         }
         break;
@@ -611,10 +668,17 @@ class Zombie extends Player {
           this.currentFrame = 0;
         }
         break;
-      case "Jump":
+      case "JumpR":
         if (this.image !== this.sprite.Jump) {
           this.image = this.sprite.Jump;
           this.framesMax = this.sprite.Jump.framesMax;
+          this.currentFrame = 0;
+        }
+        break;
+      case "JumpL":
+        if (this.image !== this.sprite.JumpL) {
+          this.image = this.sprite.JumpL;
+          this.framesMax = this.sprite.JumpL.framesMax;
           this.currentFrame = 0;
         }
         break;
