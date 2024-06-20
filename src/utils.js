@@ -640,8 +640,14 @@ function changeSprite() {
   )
     player.switchSprite("RunL");
   else if (!currentGun.isReloading && !currentGun.isFiring) {
-    if (lastKey === "right") player.switchSprite("IdleR");
-    if (lastKey === "left") player.switchSprite("IdleL");
-    // console.log('switched to idle');
+    console.log('last key '+lastKey);
+    if (player.dir === "right") {
+      player.switchSprite("IdleR");
+      console.log('changed to right');
+    }
+    else if (player.dir === "left") {
+      player.switchSprite("IdleL");
+      console.log('changed to left');
+    }
   }
 }

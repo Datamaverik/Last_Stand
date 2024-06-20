@@ -39,6 +39,7 @@ class Player {
     this.scale = scale;
     this.dead = false;
     this.isHurting = false;
+    this.dir = "right";
 
     this.sprite = sprite;
     this.currentFrame = 0;

@@ -9,7 +9,7 @@
   <body>
     <dialog id="pauseScr">
       <div id="instructions">
-        <h1 style="text-align: center;">LAST STAND</h1>
+        <h1 style="text-align: center">LAST STAND</h1>
         <p>
           WELCOME TO LAST STAND!! The aim of this game is simple, SURVIVE!!
           against a relentless horde of zombies for 3.5 minutes. We are not so
@@ -19,31 +19,36 @@
           protect you. The cannon shoot on eihter side at 10s of interval
           automatically. Good Luck Survivor!!
         </p>
-        <p style="font-size: 1.5rem; text-align: center;"><b>Controls:</b></p>
+        <p style="font-size: 1.5rem; text-align: center"><b>Controls:</b></p>
         <p>
           <u>Change Guns</u> : Press the number keys to change guns,
           <b>'1'</b> :M4A1, <b>'2'</b> :AWM, <b>'3'</b> :AKM, <b>'4'</b> :Desert
-          Eagle, <b>'5'</b> :UZI. (<a href="#" id="viewGunStats">View Gun Stats</a>). <u>Movements</u> : <b>'a'</b> :Move left,
-          <b>'d'</b> :Move right, <b>'k'</b> :Jump, <b>'left click'</b> :To
-          shoot.
+          Eagle, <b>'5'</b> :UZI. (<a href="#" id="viewGunStats"
+            >Click here to view Gun Stats</a
+          >)
         </p>
         <p>
-          <u>Inventory</u> : <b>'i'</b> :opens inventory, where you can select
+          <u>Movements</u> : <b>'A'</b> :Move left, <b>'D'</b> :Move right,
+          <b>'K'</b> :Jump, <b>'left click'</b> :To shoot & <b>'R'</b> :To
+          reload the gun
+        </p>
+        <p>
+          <u>Inventory</u> : <b>'I'</b> :opens inventory, where you can select
           and deploy defense items like Defense Blocks, Spike Traps and Land
           Mines.(Beware: the iventory can only be accessed during the
           preparation phase which is the first 30s of the game)
         </p>
         <p>
-          <u>Shop</u> : <b>'s'</b> :opens shop where you can use your score to
+          <u>Shop</u> : <b>'S'</b> :opens shop where you can use your score to
           purchase power ups and ammo.
         </p>
         <p>
-          <u>JetPack</u> : <b>'j'</b> :toggles jetpack, Beware: it'll only work
+          <u>JetPack</u> : <b>'J'</b> :toggles jetpack, Beware: it'll only work
           as long as you have enough fuel, so use jetpack wisely. The jetpack
           will refuel automatically as time passes.
         </p>
       </div>
-      <div id="gunStats" style="display: none;">
+      <div id="gunStats" style="display: none">
         <p><a href="#" id="backToInstructions">Back to Instructions</a></p>
       </div>
       <p id="msg"></p>

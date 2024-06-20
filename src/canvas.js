@@ -204,13 +204,7 @@ const bulletTrack = new Bullet({
 currentGun = UZI;
 changeGun(UZI);
 
-sorroundings = [
-  ...traps,
-  ...mines,
-  cannonLeft,
-  cannonRight,
-  ...blocks,
-];
+sorroundings = [...traps, ...mines, cannonLeft, cannonRight, ...blocks];
 
 function changeGun(gun) {
   if (currentGun.isFiring || currentGun.isReloading) return;
@@ -356,10 +350,6 @@ function animate() {
     if (traps[i].isDeployed) traps[i].update();
   }
 
-  // console.log(
-  //   "platform position " + (platform.position.x + platform.width / 2)
-  // );
-  // console.log(sorroundings);
   //    player movements
   if (keys.right.pressed && player.position.x <= 862) {
     if (lastKey === "right") {
@@ -596,6 +586,10 @@ addEventListener("mousemove", (e) => {
   mouse.x = e.clientX - rect.left;
   mouse.y = e.clientY - rect.top;
   theta = calculateAngle();
+  if (theta > -1.56 && theta < 1.56) player.dir = "right";
+  else player.dir = "left";
+
+  changeSprite();
 });
 
 addEventListener("mousedown", () => {
@@ -628,8 +622,8 @@ addEventListener("mousedown", () => {
     } else trapSetup = false;
   } else if (!preparationPhase) {
     currentGun.startFiring(player);
-    if (lastKey === "right") player.switchSprite("ShotR");
-    if (lastKey === "left") player.switchSprite("ShotL");
+    if (player.dir === "right") player.switchSprite("ShotR");
+    if (player.dir === "left") player.switchSprite("ShotL");
     //  apply shotL
   }
 });
