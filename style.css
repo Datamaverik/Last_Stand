@@ -6,11 +6,30 @@
   font-family: Pixeloid;
   src: url(./assets/PixeloidSans-Bold.otf);
 }
+:root {
+  --background-color: #141414;
+  --foregound-neg: #1c1e1e;
+}
 
 * {
   /* Padding won't be taken into affect when calculating the width of an element */
   box-sizing: border-box;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--foregound-neg) var(--background-color);
+}
+*::-webkit-scrollbar {
+  width: 15px;
+}
+*::-webkit-scrollbar-track {
+  background-color: var(--background-color);
+}
+*::-webkit-scrollbar-thumb {
+  background-color: var(--foregound-neg);
+  border-radius: 5px;
+  border: 3px solid var(--background-color);
 }
 
 body {
@@ -35,27 +54,60 @@ body {
   flex-direction: row;
   justify-content: start;
 }
-#instructions{
+#instructions {
   text-wrap: wrap;
   padding: 0px 20px 0px 20px;
   margin: 0px;
   overflow-y: scroll;
 }
-#instructions p{
+#instructions p {
   margin-bottom: 20px;
   font-family: Pixeloid;
 }
-#instructions b{
+#instructions b {
   color: rgb(0, 140, 255);
   font-family: Pixeloid;
 }
-#instructions u{
+#instructions u {
   color: gray;
   font-family: Pixeloid;
   font-size: 1.2rem;
 }
-#instructions h1{
+#instructions h1 {
   font-family: Pixeloid;
+}
+#leaderBoards table {
+  font-family: Pixeloid;
+  font-size: 1.5rem;
+}
+table {
+  width: 60%;
+  margin: 50px auto;
+  border-collapse: collapse;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+}
+thead {
+  background-color:#0b504245;
+  color: #ffffff;
+  text-align: left;
+}
+th,
+td {
+  padding: 12px 15px;
+  text-align: center;
+  border-bottom: 1px solid #000000;
+}
+tbody tr {
+  background-color: #00000045;
+}
+tbody tr:nth-of-type(even) {
+  background-color: #52525265;
+}
+tbody tr:last-of-type {
+  border-bottom: 2px solid #0b504245;
+}
+tbody tr:hover {
+  background-color: #68686874;
 }
 
 #header {
@@ -107,10 +159,12 @@ body {
   align-items: start;
   justify-content: space-between;
 }
-#PUdesc,#viewGunStats,#backToInstructions {
+#PUdesc,
+#viewGunStats,
+#backToInstructions {
   font-family: Pixeloid;
 }
-#viewGunStats{
+#viewGunStats {
   font-size: 1.2rem;
   color: red;
 }
@@ -193,44 +247,93 @@ meter::-webkit-meter-even-less-good-value {
 #PUmsg {
   transition: cubic-bezier(0.075, 0.82, 0.165, 1);
   z-index: 1;
+  backdrop-filter: blur(3px);
   opacity: 0;
   margin-bottom: 20px;
   margin-top: 80px;
-  padding: 5px 10px;
+  padding: 15px 20px;
+  background-color: rgba(255, 255, 255, 0.233);
   border-radius: 5px;
   text-shadow: 3px 3px 0px black;
   font-size: 1.5rem;
   /* background-color: #292330; */
 }
-
+#myForm,
+#nameInput,
+#nameInputLabel {
+  margin: 10px;
+  font-family: Pixeloid;
+  font-size: large;
+}
+#nameInput {
+  padding: 10px;
+  border: none;
+  background-color: rgba(207, 207, 207, 0.473);
+  border-radius: 5px;
+}
+#nameInput::placeholder {
+  color: rgb(33, 33, 33);
+}
 #pauseScr {
   width: 80%;
+  border-radius: 10px;
+  border: none;
+  box-shadow: 0px 0px 20px black;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   z-index: 2;
   height: 90vh;
+  color: rgb(199, 199, 199);
+  background-image: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.798),
+      rgba(75, 75, 75, 0.63)
+    ),
+    url("./assets/Last_Stand_logo.png");
+  background-position: center;
+  background-size: contain;
+  background-color: rgb(31, 33, 35);
 }
-#gunStats{
+#pauseScr::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.798),
+      rgba(75, 75, 75, 0.63)
+    ),
+    url("./assets/Last_Stand_logo.png");
+  background-position: center;
+  background-size: contain;
+  filter: blur(10px); /* Adjust the blur level as needed */
+  z-index: -1; /* Ensure it stays behind the content */
+}
+#gunStats {
   display: grid;
   grid-template-columns: 2;
   grid-template-rows: 4;
   overflow-y: scroll;
   width: 100%;
+  backdrop-filter: blur(5px);
 }
-#gunIcon2{
+#gunIcon2 {
   width: 30%;
   height: 100px;
   margin: 100px 60px 0px 20px;
 }
-#gunIcon2 svg{
+#gunIcon2 svg {
   fill: black;
 }
-#gunDiv p{
+#gunDiv p {
   font-family: Pixeloid;
 }
-#gunDiv h2{
+#gunDiv h2 {
   font-family: Pixeloid;
   color: rgb(0, 140, 255);
 }

@@ -8,17 +8,28 @@
   </head>
   <body>
     <dialog id="pauseScr">
+      <div id="leaderBoards"></div>
       <div id="instructions">
-        <h1 style="text-align: center">LAST STAND</h1>
+        <p style="text-align: center;color: rgb(131, 89, 149);font-size: 3rem;">LAST STAND</p>
+        <p style="color: rgb(140, 186, 194);font-size: 1.5rem;">WELCOME TO LAST STAND!!</p>
         <p>
-          WELCOME TO LAST STAND!! The aim of this game is simple, SURVIVE!!
-          against a relentless horde of zombies for 3.5 minutes. We are not so
-          ruthless to leave you stranded withuot any supplies during a zombie
-          apocalypse. You are given defense items in the inventroy which you use
-          to set your base around the cannons, YES CANNONS!! they are there to
-          protect you. The cannon shoot on eihter side at 10s of interval
-          automatically. Good Luck Survivor!!
+          The aim of this game is simple,<b> SURVIVE!!</b>
+          against a relentless horde of zombies for 3.5 minutes. 
         </p>
+          <p>
+            We are not so
+            ruthless to leave you stranded withuot any supplies during a zombie
+            apocalypse.
+          </p>
+          <p>
+            You are given defense items in the inventroy which you use
+            to set your base around the cannons, YES CANNONS!! they are there to
+            protect you. 
+          </p>
+          <p>
+            The cannon shoot on eihter side at 10s of interval
+            automatically. Good Luck Survivor!!
+          </p>
         <p style="font-size: 1.5rem; text-align: center"><b>Controls:</b></p>
         <p>
           <u>Change Guns</u> : Press the number keys to change guns,
@@ -53,6 +64,10 @@
       </div>
       <p id="msg"></p>
       <button id="restartBtn">Restart</button>
+      <form id="myForm" action="post">
+        <label id="nameInputLabel" for="nameInput">Username</label>
+        <input id="nameInput" type="text" placeholder="Enter Name" name="username">
+      </form>
       <button id="startBtn">Start</button>
     </dialog>
     <dialog id="powerUpScr">

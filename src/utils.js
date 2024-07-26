@@ -9,15 +9,18 @@ const max = 60,
   size = 20;
 let collisionDetected,
   theta,
+  currentUser,
   lastKey = "right",
   gamePaused = false,
+  gameOver = false,
   defenseBlockSetup = false,
   mineSetup = false,
   trapSetup = false,
   inventoryOpen = false,
   preparationPhase = true,
+  gameStarted = false,
   timeSpent = 0,
-  preparationTime = 30,
+  preparationTime = 10,
   time,
   spawnInterval = 6000,
   time2,
@@ -44,6 +47,8 @@ let collisionDetected,
 
 const Hmeter = document.getElementById("Hmeter"),
   Bmeter = document.getElementById("Bmeter"),
+  myForm = document.getElementById("myForm"),
+  nameInput = document.getElementById("nameInput"),
   Fmeter = document.getElementById("Fmeter"),
   timer = document.getElementById("timer"),
   timer2 = document.getElementById("timer2"),
@@ -71,6 +76,9 @@ const Hmeter = document.getElementById("Hmeter"),
 
 window.onload = () => {
   pauseScr.style.display = "flex";
+  myForm.style.display = "block";
+  gameStarted = false;
+  console.log(preparationPhase);
   restartBtn.style.display = "none";
   powerUpScr.style.display = "none";
   inventoryScr.style.display = "none";
@@ -396,6 +404,58 @@ function formatTimer(seconds) {
 }
 
 function GameOver(text) {
+  let users = JSON.parse(localStorage.getItem("userScores")) || [];
+  const newScore = player.score;
+  // Update the user's score
+  users = users.map((user) => {
+    if (user.username === currentUser) {
+      user.score = newScore;
+    }
+    return user;
+  });
+
+  // Save the updated list back to localStorage
+  localStorage.setItem("userScores", JSON.stringify(users));
+  console.log(users);
+
+  //  printing the leaderboards
+  users.sort((a, b) => b.score - a.score);
+
+  // Create the HTML table
+  let tableHtml = `
+    <table>
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Username</th>
+          <th>Score</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  users.forEach((user, index) => {
+    tableHtml += `
+      <tr>
+        <td>${index + 1}</td>
+        <td>${user.username}</td>
+        <td>${user.score}</td>
+      </tr>
+    `;
+  });
+
+  tableHtml += `
+      </tbody>
+    </table>
+  `;
+
+  // Append the table to the leaderboard container
+  const leaderboardContainer = document.getElementById("leaderBoards");
+  leaderboardContainer.innerHTML = tableHtml;
+
+  gameOver = true;
+  myForm.style.display = "none";
+  nameInput.style.display = "none";
   stopCannonFire();
   msg.textContent = text;
   gamePaused = true;
@@ -459,6 +519,7 @@ function decreaseTimer() {
 
 function startGame() {
   console.log("Game started");
+  myForm.style.display = "none";
   zombieInterval = setInterval(() => {
     spawnZombies(spawnInterval);
   }, spawnInterval);
@@ -544,7 +605,7 @@ const sounds = {
   M4A1r: new Audio("./sounds/M4A1r.mp3"),
   Run: new Audio("./sounds/Run.mp3"),
   Jump: new Audio("./sounds/Jump.mp3"),
-  Jump: new Audio("./sounds/Jump.mp3"),
+  Jump2: new Audio("./sounds/Jump2.mp3"),
   gunChange: new Audio("./sounds/gunChange.mp3"),
   Hurt: new Audio("./sounds/Hurt.mp3"),
   Hurt2: new Audio("./sounds/Hurt2.mp3"),
@@ -640,14 +701,10 @@ function changeSprite() {
   )
     player.switchSprite("RunL");
   else if (!currentGun.isReloading && !currentGun.isFiring) {
-    console.log('last key '+lastKey);
     if (player.dir === "right") {
       player.switchSprite("IdleR");
-      console.log('changed to right');
-    }
-    else if (player.dir === "left") {
+    } else if (player.dir === "left") {
       player.switchSprite("IdleL");
-      console.log('changed to left');
     }
   }
 }

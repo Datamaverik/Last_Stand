@@ -441,6 +441,7 @@ function animate() {
 animate();
 
 addEventListener("keydown", ({ key }) => {
+  if (!gameStarted) return;
   switch (key) {
     case "d":
       keys.right.pressed = true;
@@ -485,6 +486,7 @@ addEventListener("keydown", ({ key }) => {
       }
       break;
     case "Escape":
+      if (gameOver) return;
       if (gamePaused) {
         if (preparationPhase)
           updatePUmsg(
@@ -507,6 +509,7 @@ addEventListener("keydown", ({ key }) => {
         decreaseTimer();
         powerUpScr.close();
         powerUpScr.style.display = "none";
+        myForm.style.display = "none";
         pauseScr.close();
         pauseScr.style.display = "none";
       } else {
@@ -521,6 +524,7 @@ addEventListener("keydown", ({ key }) => {
         HordeSoundOff();
         powerUpScr.close();
         powerUpScr.style.display = "none";
+        myForm.style.display = "none";
         pauseScr.showModal();
         pauseScr.style.display = "flex";
       }
@@ -529,6 +533,7 @@ addEventListener("keydown", ({ key }) => {
 });
 
 addEventListener("keyup", ({ key }) => {
+  if (!gameStarted) return;
   switch (key) {
     case "d":
       keys.right.pressed = false;
@@ -721,16 +726,59 @@ document.querySelectorAll(".powerUp").forEach((btn, i) => {
 });
 
 startBtn.onclick = () => {
-  msg.textContent = "";
-  playSound("click");
-  pauseScr.style.display = "none";
-  powerUpScr.style.display = "none";
-  inventoryScr.style.display = "none";
-  decreaseTimer();
-  updatePUmsg(
-    `Preparation time: ${
-      preparationTime - timeSpent
-    }s. Place defense blocks, traps and mines strategically`,
-    "green"
-  );
+  const formData = new FormData(myForm);
+  if (formData.get("username")) {
+    gameStarted = true;
+    currentUser = formData.get("username").toString();
+    const currentUserObj = {
+      username: currentUser,
+      score: 0,
+    };
+
+    let users = JSON.parse(localStorage.getItem("userScores")) || [];
+
+    // Check if the user already exists in the list
+    let userFound = false;
+    users = users.map((user) => {
+      if (user.username === currentUserObj.username) {
+        userFound = true;
+        return currentUserObj;
+      }
+      return user;
+    });
+
+    // If the user is not found, add them to the list
+    if (!userFound) {
+      users.push(currentUserObj);
+    }
+
+    // Ensure the list has no more than 10 users
+    if (users.length > 10) {
+      users = users.slice(-10);
+    }
+
+    // Save the updated list back to localStorage
+    localStorage.setItem("userScores", JSON.stringify(users));
+    console.log(users);
+
+    gameOver = false;
+    msg.textContent = "";
+    playSound("click");
+    pauseScr.style.display = "none";
+    powerUpScr.style.display = "none";
+    inventoryScr.style.display = "none";
+    decreaseTimer();
+    updatePUmsg(
+      `Preparation time: ${
+        preparationTime - timeSpent
+      }s. Place defense blocks, traps and mines strategically`,
+      "green"
+    );
+  } else {
+    PUmsg.style.zIndex = 1000;
+    updatePUmsg("Enter Your username to start", "red");
+    setTimeout(() => {
+      PUmsg.style.zIndex = 1;
+    }, 10000);
+  }
 };
